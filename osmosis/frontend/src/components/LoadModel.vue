@@ -107,12 +107,14 @@ const addDiffusersModel = (id: string) => {
                 <button
                   class="w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md"
                   @click="tab = Tabs.COREML"
+                  disabled
                 >
                   CoreML model (macOS)
                 </button>
                 <button
                   class="w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md"
                   @click="tab = Tabs.CKPT"
+                  disabled
                 >
                   Checkpoint file
                 </button>
