@@ -1,3 +1,7 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
 [project]
 name = "osmosis"
 description = ""
@@ -27,9 +31,12 @@ osmosis = "osmosis.cli:cli"
 [project.optional-dependencies]
 dev = ["black"]
 
-[build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
-
 [tool.setuptools.dynamic]
 version = { attr = "osmosis.__version__" }
+
+[tool.setuptools.packages.find]
+"where" = ["."]
+"include" = ["osmosis*"]
+
+[tool.setuptools.package-data]
+"osmosis.frontend.dist" = ["**"]
