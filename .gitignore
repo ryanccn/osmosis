@@ -1,0 +1,26 @@
+# macOS
+
+.DS_Store
+
+# Node.js
+
+node_modules/
+
+# Python packaging
+
+__pycache__/
+*.pyc
+*.egg-info/
+sdist/
+wheels/
+eggs/
+.eggs/
+dist/
+*.egg
+MANIFEST
+
+# Development tooling
+
+.venv/
+.vscode/
+.idea/

@@ -1,0 +1,65 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fg-color: 17 24 39;
+  --bg-color: 255 255 255;
+  --surface-color: 243 244 246;
+  --surface-color-hover: 229 231 235;
+  --accent-color: 20 184 166;
+  --accent-color-hover: 45 212 191;
+}
+
+html {
+  color-scheme: light;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --fg-color: 255 255 255;
+    --bg-color: 17 24 39;
+    --surface-color: 31 41 55;
+    --surface-color-hover: 55 65 81;
+    --accent-color: 45 212 191;
+    --accent-color-hover: 20 184 166;
+  }
+
+  html {
+    color-scheme: dark;
+  }
+}
+
+@layer base {
+  body {
+    @apply text-fg bg-bg;
+    accent-color: rgba(var(--accent-color) / 1);
+  }
+
+  ::-webkit-scrollbar-track {
+    @apply bg-surface w-2;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    @apply bg-accent/80 hover:bg-accent/100 transition-colors rounded-full w-1;
+  }
+}
+
+@layer components {
+  .osmosis.form.input {
+    @apply px-3 py-2 placeholder:text-fg/50 bg-surface rounded focus:outline-none focus:ring-accent/50 focus:ring disabled:opacity-75;
+  }
+
+  .osmosis.button {
+    @apply px-4 py-2 font-medium text-sm transition text-white rounded disabled:opacity-75;
+    @apply focus:outline-none focus:ring focus:ring-accent/50;
+  }
+
+  .osmosis.primary.button {
+    @apply bg-accent hover:bg-accent-hover;
+  }
+
+  .osmosis.danger.button {
+    @apply bg-red-500 hover:bg-red-400;
+  }
+}

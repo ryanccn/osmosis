@@ -1,0 +1,35 @@
+[project]
+name = "osmosis"
+description = ""
+authors = [{ name = "Ryan Cao", email = "hello@ryanccn.dev" }]
+
+readme = "README.md"
+requires-python = ">=3.8"
+
+dynamic = ["version"]
+
+dependencies = [
+  "diffusers",
+  "typer",
+  "eventlet",
+  "flask-socketio",
+  "flask",
+  "torch",
+  "transformers",
+  "accelerate",
+  "realesrgan",
+  "tqdm",
+]
+
+[project.scripts]
+osmosis = "osmosis.cli:cli"
+
+[project.optional-dependencies]
+dev = ["black"]
+
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.dynamic]
+version = { attr = "osmosis.__version__" }

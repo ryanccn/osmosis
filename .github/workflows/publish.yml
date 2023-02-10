@@ -1,0 +1,30 @@
+name: Publish to PyPI
+
+on:
+  push:
+    paths:
+      - 'osmosis/version.py'
+  workflow_dispatch:
+
+jobs:
+  publish:
+    if: github.repository == 'ryanccn/osmosis'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source
+        uses: actions/checkout@v3
+
+      - name: Install Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.10'
+      - name: Install build dependencies
+        run: python3 -m pip install --upgrade build
+      - name: Build package
+        run: python3 -m build
+
+      - name: Publish to PyPI
+        uses: pypa/gh-action-pypi-publish@release/v1
+        with:
+          password: ${{ secrets.PYPI_API_TOKEN }}
