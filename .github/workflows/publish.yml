@@ -15,12 +15,24 @@ jobs:
       - name: Checkout source
         uses: actions/checkout@v3
 
-      - name: Install Python
+      - name: Setup Python
         uses: actions/setup-python@v4
         with:
           python-version: '3.10'
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 19
       - name: Install build dependencies
         run: python3 -m pip install --upgrade build
+
+      - name: Install frontend dependencies
+        run: yarn install --frozen-lockfile
+        working-directory: ./osmosis/frontend
+      - name: Build frontend
+        run: yarn build
+        working-directory: ./osmosis/frontend
+
       - name: Build package
         run: python3 -m build
 
