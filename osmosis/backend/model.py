@@ -7,6 +7,7 @@ from flask_socketio import SocketIO
 import torch
 import numpy as np
 from .utils import auto_device
+from .. import __version__
 
 from threading import Event
 from platform import system
@@ -154,7 +155,7 @@ class OsmosisModel:
                 "model_weights": self.name,
                 "model_hash": None,
                 "app_id": "ryanccn/osmosis",
-                "app_version": "0.0.1",
+                "app_version": __version__,
                 "image": {
                     "prompt": [
                         {
