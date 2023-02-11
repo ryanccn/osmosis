@@ -8,7 +8,6 @@ description = "An experimental Stable Diffusion frontend"
 authors = [{ name = "Ryan Cao", email = "hello@ryanccn.dev" }]
 
 readme = "README.md"
-license = { file = "LICENSE" }
 requires-python = ">=3.9, <3.11"
 
 dynamic = ["version"]
@@ -23,6 +22,7 @@ dependencies = [
   "flask-socketio~=5.3.2",
   "torch>=1.13.1",
   "realesrgan",
+  "gfpgan",
   "tqdm",
 ]
 

@@ -13,7 +13,7 @@ An experimental Stable Diffusion web frontend.
 - [ ] [CoreML models](https://github.com/apple/ml-stable-diffusion) (macOS)
 - [ ] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models
 - [x] [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaling
-- [ ] [GFPGAN](https://github.com/TencentARC/GFPGAN) face restoration
+- [x] [GFPGAN](https://github.com/TencentARC/GFPGAN) face restoration
 - [x] Structured metadata according to https://github.com/invoke-ai/InvokeAI/issues/266
 - [ ] Gallery view
 - [ ] [Image to image](https://huggingface.co/docs/diffusers/using-diffusers/img2img)

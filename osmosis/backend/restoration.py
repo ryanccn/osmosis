@@ -21,7 +21,7 @@ def check_download(url: str, file_path: str):
             progress = tqdm(
                 unit_scale=True,
                 unit="B",
-                desc=f"Downloading {file_path.split('/')[-1]}",
+                desc=f"[restoration] Downloading {file_path.split('/')[-1]}",
             )
             progress.total = c
 
@@ -93,5 +93,44 @@ class RealESRGAN:
             torch.cuda.empty_cache()
 
         upsampler = None
+
+        return Image.fromarray(output[..., ::-1])
+
+
+class GFPGAN:
+    def __init__(self):
+        file = "GFPGANv1.4.pth"
+        url = "https://github.com/TencentARC/GFPGAN/releases/download/v1.3.0/GFPGANv1.4.pth"
+
+        abs_file_path = os.path.join(Config.GFPGAN_MODELS_DIR, file)
+        check_download(url, abs_file_path)
+        self.file_path = abs_file_path
+
+    def restore(self, image, strength):
+        from gfpgan import GFPGANer
+
+        # GFPGAN downloads its own weights into the current working directory, thus the preposterous workaround
+        cwd = os.getcwd()
+        os.chdir(Config.GFPGAN_MODELS_DIR)
+
+        upsampler = GFPGANer(
+            model_path=self.file_path,
+            upscale=1,
+            arch="clean",
+            channel_multiplier=2,
+            bg_upsampler=None,
+        )
+
+        image = image.convert("RGB")
+
+        bgr_image = np.array(image, dtype=np.uint8)[..., ::-1]
+
+        _, _, output = upsampler.enhance(bgr_image, paste_back=True, weight=strength)
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+        upsampler = None
+        os.chdir(cwd)
 
         return Image.fromarray(output[..., ::-1])

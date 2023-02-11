@@ -1,6 +1,6 @@
 from diffusers import StableDiffusionPipeline
 from diffusers.utils.import_utils import is_xformers_available
-from .restoration import RealESRGAN
+from .restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
 
@@ -23,6 +23,7 @@ class OsmosisModel:
     diffusers_model: StableDiffusionPipeline | None
 
     esrgan: RealESRGAN | None
+    gfpgan: GFPGAN | None
 
     def __init__(self):
         self.type = None
@@ -66,7 +67,8 @@ class OsmosisModel:
         width = data.get("width", 512)
         height = data.get("height", 512)
 
-        upscaler = data.get("upscale", None)
+        upscale = data.get("upscale", -1)
+        face_restoration = data.get("face_restoration", -1)
 
         if not prompt:
             raise TypeError("No prompt provided!")
@@ -79,7 +81,7 @@ class OsmosisModel:
             def diffusers_callback(
                 step: int, timestep: int, latents: torch.FloatTensor
             ):
-                sio.emit("progress", [step, steps])
+                sio.emit("txt2img:progress", {"type": "main", "data": [step, steps]})
                 eventlet.sleep(0)
 
             generator = torch.Generator(
@@ -97,13 +99,19 @@ class OsmosisModel:
                 generator=generator,
             ).images[0]
 
-            if upscaler:
-                if upscaler["model"] == "RealESRGAN":
-                    self.esrgan = RealESRGAN()
-                    output = self.esrgan.upscale(output, upscaler["scale"])
-                    self.esrgan = None
+            if upscale or face_restoration:
+                sio.emit("txt2img:progress", {"type": "postprocessing"})
 
-                gc.collect()
+            if upscale:
+                self.esrgan = RealESRGAN()
+                output = self.esrgan.upscale(output, upscale)
+                self.esrgan = None
+            if face_restoration:
+                self.gfpgan = GFPGAN()
+                output = self.gfpgan.restore(output, face_restoration)
+                self.gfpgan = None
+
+            gc.collect()
 
             metadata = {
                 "model": "stable diffusion",
@@ -134,9 +142,13 @@ class OsmosisModel:
                 },
             }
 
-            if upscaler:
+            if upscale:
                 metadata["image"]["postprocessing"].append(
-                    {"type": "esrgan", "scale": upscaler["scale"], "strength": 0.75}
+                    {"type": "esrgan", "scale": upscale, "strength": 0.75}
+                )
+            if face_restoration:
+                metadata["image"]["postprocessing"].append(
+                    {"type": "gfpgan", "strength": 0.5}
                 )
 
             return {"image": output, "metadata": metadata}

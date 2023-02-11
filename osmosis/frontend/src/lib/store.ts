@@ -66,14 +66,17 @@ export const useOsmosisStore = defineStore("osmosis", {
       prompt: string,
       negativePrompt: string,
       seed: number,
-      upscale: { model: string; scale: number } | null
+      upscale: number | null,
+      faceRestoration: number | null
     ) {
       return new Promise<void>((resolve) => {
         ws.emit("txt2img", {
           prompt,
           negative_prompt: negativePrompt || null,
           seed,
+
           upscale,
+          face_restoration: faceRestoration,
         });
 
         this.progress.type = "indeterminate";
@@ -129,8 +132,15 @@ export const setupStoreListeners = () => {
     useOsmosisStore().connected = false;
   });
 
-  ws.on("progress", ([now, full]: [number, number]) => {
-    useOsmosisStore().progress.type = "determinate";
-    useOsmosisStore().progress.data = [now, full];
-  });
+  ws.on(
+    "txt2img:progress",
+    ({ type, data }: { type: string; data: [number, number] }) => {
+      if (type === "main") {
+        useOsmosisStore().progress.type = "determinate";
+        useOsmosisStore().progress.data = data;
+      } else if (type === "postprocessing") {
+        useOsmosisStore().progress.type = "indeterminate";
+      }
+    }
+  );
 };

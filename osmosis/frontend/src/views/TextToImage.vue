@@ -11,20 +11,17 @@ const negativePrompt = ref("");
 const seed = ref(-1);
 
 const upscale = ref(false);
-const upscaleModel = ref("RealESRGAN");
 const upscaleScale = ref(2);
+
+const faceRestoration = ref(false);
 
 const generate = () => {
   store.txt2img(
     prompt.value,
     negativePrompt.value,
     seed.value,
-    upscale.value
-      ? {
-          model: upscaleModel.value,
-          scale: upscaleScale.value,
-        }
-      : null
+    upscale.value ? upscaleScale.value : null,
+    faceRestoration.value ? 0.5 : null
   );
 };
 
@@ -68,27 +65,21 @@ const stopGenerate = () => {
           <span class="text-lg font-semibold">Upscale</span>
         </h2>
 
-        <div class="flex flex-row items-center gap-x-3">
-          <div class="flex flex-row gap-x-2 items-center">
-            <select
-              class="osmosis form input"
-              v-model="upscaleModel"
-              :disabled="!upscale"
-            >
-              <option value="RealESRGAN">RealESRGAN</option>
-            </select>
-          </div>
-          <div class="flex flex-row gap-x-2 items-center">
-            <select
-              class="osmosis form input"
-              v-model="upscaleScale"
-              :disabled="!upscale"
-            >
-              <option value="2">2x</option>
-              <option value="4">4x</option>
-            </select>
-          </div>
-        </div>
+        <select
+          class="osmosis form input"
+          v-model="upscaleScale"
+          :disabled="!upscale"
+        >
+          <option value="2">2x</option>
+          <option value="4">4x</option>
+        </select>
+      </div>
+
+      <div class="flex flex-col gap-y-2">
+        <h2 class="flex flex-row items-center gap-x-2">
+          <input type="checkbox" v-model="faceRestoration" class="p-2" />
+          <span class="text-lg font-semibold">Face restoration</span>
+        </h2>
       </div>
 
       <button
