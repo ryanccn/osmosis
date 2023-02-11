@@ -2,6 +2,8 @@ name: Publish release
 
 on:
   push:
+    branches:
+      - 'main'
     paths:
       - 'osmosis/version.py'
   workflow_dispatch:
@@ -49,7 +51,7 @@ jobs:
           tag: ${{ steps.get-package-version.outputs.version }}
           artifacts: 'dist/*.whl,dist/*.tar.gz'
           generateReleaseNotes: true
-          draft: true
+          draft: false
 
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
