@@ -43,7 +43,27 @@ to install. Alternatively, simple use `pip` to install globally:
 $ pip install [--user] osmosis
 ```
 
-If you're on a NVIDIA GPU, replace `osmosis` in the install scripts with `osmosis[xformers]` to enable [xFormers](https://github.com/facebookresearch/xformers) optimization support!
+### NVIDIA instructions
+
+If you're on a NVIDIA GPU, replace `osmosis` in the install scripts with `osmosis[xformers]` to enable [xFormers](https://github.com/facebookresearch/xformers) optimization support. In addition, add `--pip-args "--extra-index-url https://download.pytorch.org/whl/cu117"` to the end to install a CUDA-enabled PyTorch build.
+
+```bash
+$ pipx install 'osmosis[xformers]' --pip-args "--extra-index-url https://download.pytorch.org/whl/cu117"
+
+# or in pip:
+$ pip install [--user] 'osmosis[xformers]' --extra-index-url https://download.pytorch.org/whl/cu117
+```
+
+### Linux / AMD instructions
+
+If you're on Linux and using an AMD GPU, you can also use [ROCm](https://docs.amd.com/)-optimized PyTorch wheels on install.
+
+```bash
+$ pipx install osmosis --pip-args "--extra-index-url https://download.pytorch.org/whl/rocm5.2"
+
+# or in pip:
+$ pip install [--user] osmosis --extra-index-url https://download.pytorch.org/whl/rocm5.2
+```
 
 ## Running
 
