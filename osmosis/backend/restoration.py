@@ -111,7 +111,7 @@ class GFPGAN:
 
         # GFPGAN downloads its own weights into the current working directory, thus the preposterous workaround
         cwd = os.getcwd()
-        os.chdir(Config.GFPGAN_MODELS_DIR)
+        os.chdir(Config.DATA_DIR)
 
         upsampler = GFPGANer(
             model_path=self.file_path,
