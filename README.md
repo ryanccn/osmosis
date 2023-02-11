@@ -1,5 +1,7 @@
 # Osmosis
 
+[![PyPI](https://img.shields.io/pypi/v/osmosis?style=flat-square)](https://pypi.org/project/osmosis/) [![License](https://img.shields.io/github/license/ryanccn/osmosis?style=flat-square)](https://github.com/ryanccn/osmosis/blob/main/LICENSE)
+
 An experimental Stable Diffusion web frontend.
 
 > **Warning**
