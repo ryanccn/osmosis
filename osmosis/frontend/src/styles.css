@@ -62,4 +62,11 @@ html {
   .osmosis.danger.button {
     @apply bg-red-500 hover:bg-red-400;
   }
+
+  .h-osmosis-top-bar {
+    height: 3.5rem;
+  }
+  .h-osmosis-content {
+    height: calc(100vh - 3.5rem);
+  }
 }

@@ -35,9 +35,9 @@ const stopGenerate = () => {
 </script>
 
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] flex-grow">
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] h-osmosis-content">
     <div
-      class="border-surface border-r-2 flex flex-col gap-y-4 p-5 overflow-y-scroll"
+      class="border-surface border-r-2 flex flex-col gap-y-4 p-5 h-osmosis-content overflow-y-scroll"
     >
       <label class="flex flex-col gap-y-2">
         <span class="text-sm font-semibold">Prompt</span>
@@ -118,13 +118,14 @@ const stopGenerate = () => {
       </button>
     </div>
 
-    <div class="grid place-content-center">
+    <div class="flex items-center w-full h-osmosis-content p-2 bg-surface">
+      <div class="flex flex-row gap-x-3"></div>
+
       <img
-        v-if="store.gallerySelected"
         :src="`/outputs/${store.gallerySelected}`"
-        class="block"
+        class="block rounded-lg object-contain max-w-full max-h-full mx-auto"
+        v-if="store.gallerySelected"
       />
-      <span v-else>Generate an image!</span>
     </div>
 
     <GalleryView />

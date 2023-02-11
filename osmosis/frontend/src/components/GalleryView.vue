@@ -5,7 +5,7 @@ const store = useOsmosisStore();
 </script>
 
 <template>
-  <div class="flex flex-col gap-y-2 h-full">
+  <div class="flex flex-col gap-y-2 p-4 h-osmosis-content">
     <div class="flex gap-x-2 items-center p-4">
       <!-- <button class="bg-red-500 text-white osmosis danger button">
         Delete

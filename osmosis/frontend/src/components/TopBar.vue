@@ -9,7 +9,7 @@ const loadModelIsOpen = ref(false);
 
 <template>
   <div
-    class="flex items-center justify-between px-6 py-3 border-b-2 border-surface shrink-0"
+    class="flex items-center justify-between px-6 py-3 border-b-2 border-surface shrink-0 h-osmosis-top-bar"
   >
     <div class="flex gap-x-6 items-center">
       <h1 class="font-extrabold text-2xl tracking-tight mr-4">Osmosis</h1>
