@@ -99,14 +99,15 @@ class OsmosisModel:
                 generator=generator,
             ).images[0]
 
-            if upscale or face_restoration:
+            if upscale > -1 or face_restoration > -1:
                 sio.emit("txt2img:progress", {"type": "postprocessing"})
+                eventlet.sleep(0)
 
-            if upscale:
+            if upscale > -1:
                 self.esrgan = RealESRGAN()
                 output = self.esrgan.upscale(output, upscale)
                 self.esrgan = None
-            if face_restoration:
+            if face_restoration > -1:
                 self.gfpgan = GFPGAN()
                 output = self.gfpgan.restore(output, face_restoration)
                 self.gfpgan = None

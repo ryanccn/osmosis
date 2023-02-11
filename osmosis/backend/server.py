@@ -85,7 +85,6 @@ class OsmosisServer:
         @self.sio.on("txt2img")
         def txt2img(data):
             output = self.model.txt2img(data, sio=self.sio)
-
             file_name = save_image(output["image"], output["metadata"])
 
             self.sio.emit("txt2img:done", file_name)
