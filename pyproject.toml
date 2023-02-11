@@ -8,25 +8,25 @@ description = ""
 authors = [{ name = "Ryan Cao", email = "hello@ryanccn.dev" }]
 
 readme = "README.md"
-requires-python = ">=3.8"
+requires-python = ">=3.9, <3.11"
 
 dynamic = ["version"]
 
 dependencies = [
-  "diffusers",
-  "typer",
-  "eventlet",
-  "flask-socketio",
-  "flask",
-  "torch",
+  "diffusers[torch]~=0.11",
   "transformers",
   "accelerate",
+  "click>=8.1",
+  "eventlet",
+  "flask~=2.2.2",
+  "flask-socketio~=5.3.2",
+  "torch>=1.13.1",
   "realesrgan",
   "tqdm",
 ]
 
 [project.scripts]
-osmosis = "osmosis.cli:cli"
+osmosis = "osmosis.cli:main"
 
 [project.optional-dependencies]
 dev = ["black"]
