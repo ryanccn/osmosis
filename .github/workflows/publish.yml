@@ -36,6 +36,18 @@ jobs:
       - name: Build package
         run: python3 -m build
 
+      - name: Get package version
+        id: get-package-version
+        run: python -c "from osmosis import __version__; print(f\"version={__version__}\")" > $GITHUB_OUTPUT
+      - name: Publish draft to GitHub Releases
+        uses: ncipollo/release-action@v1
+        with:
+          name: 'v${{ steps.get-package-version.outputs.version }}'
+          tag: ${{ steps.get-package-version.outputs.version }}
+          artifacts: 'dist/*.whl,dist/*.tar.gz'
+          generateReleaseNotes: true
+          draft: true
+
       - name: Publish to PyPI
         uses: pypa/gh-action-pypi-publish@release/v1
         with:
