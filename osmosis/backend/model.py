@@ -8,27 +8,42 @@ import torch
 import numpy as np
 from .utils import auto_device
 
+from threading import Event
 from platform import system
 import random
 import eventlet
+
+import sys
 import gc
 
 from typing import Literal
 
 
+class StopRequestedException(Exception):
+    pass
+
+
 class OsmosisModel:
     type: Literal["diffusers"] | Literal["coreml"] | None
     name: str | None
+    sio: SocketIO | None
 
     diffusers_model: StableDiffusionPipeline | None
 
     esrgan: RealESRGAN | None
     gfpgan: GFPGAN | None
 
-    def __init__(self):
+    def __init__(self, sio: SocketIO):
         self.type = None
         self.name = None
         self.diffusers_model = None
+        self.sio = sio
+
+        self.stop_requested = Event()
+
+        @self.sio.on("stop")
+        def stop():
+            self.stop_requested.set()
 
     def load_diffusers(self, model_id: str, revision: str = "main"):
         self.type = "diffusers"
@@ -56,7 +71,11 @@ class OsmosisModel:
         if system() == "Darwin":
             _ = self.diffusers_model("noop", num_inference_steps=1)
 
-    def txt2img(self, data: dict, sio: SocketIO, width: int = 512, height: int = 512):
+    def check_if_stop(self):
+        if self.stop_requested.is_set():
+            raise StopRequestedException()
+
+    def txt2img(self, data: dict):
         if self.type == None:
             return
 
@@ -68,7 +87,7 @@ class OsmosisModel:
         height = data.get("height", 512)
 
         upscale = data.get("upscale", -1)
-        face_restoration = data.get("face_restoration", -1)
+        face_restoration = data.get("face_restoration", None)
 
         if not prompt:
             raise TypeError("No prompt provided!")
@@ -76,38 +95,54 @@ class OsmosisModel:
         if seed < 0:
             seed = random.randrange(0, np.iinfo(np.uint32).max)
 
-        if self.type == "diffusers":
+        try:
+            self.stop_requested.clear()
+            if self.type == "diffusers":
 
-            def diffusers_callback(
-                step: int, timestep: int, latents: torch.FloatTensor
-            ):
-                sio.emit("txt2img:progress", {"type": "main", "data": [step, steps]})
+                def diffusers_callback(
+                    step: int, timestep: int, latents: torch.FloatTensor
+                ):
+                    self.check_if_stop()
+                    self.sio.emit(
+                        "txt2img:progress", {"type": "main", "data": [step, steps]}
+                    )
+                    eventlet.sleep(0)
+
+                generator = torch.Generator(
+                    device="cuda" if torch.cuda.is_available() else "cpu"
+                ).manual_seed(seed)
+
+                self.check_if_stop()
+
+                output = self.diffusers_model(
+                    prompt=prompt,
+                    width=width,
+                    height=height,
+                    num_inference_steps=steps,
+                    negative_prompt=negative_prompt,
+                    callback_steps=1,
+                    callback=diffusers_callback,
+                    generator=generator,
+                ).images[0]
+
+                self.check_if_stop()
+            else:
+                raise NotImplementedError()
+
+            if upscale > -1 or face_restoration:
+                self.sio.emit("txt2img:progress", {"type": "postprocessing"})
                 eventlet.sleep(0)
 
-            generator = torch.Generator(
-                device="cuda" if torch.cuda.is_available() else "cpu"
-            ).manual_seed(seed)
-
-            output = self.diffusers_model(
-                prompt=prompt,
-                width=width,
-                height=height,
-                num_inference_steps=steps,
-                negative_prompt=negative_prompt,
-                callback_steps=1,
-                callback=diffusers_callback,
-                generator=generator,
-            ).images[0]
-
-            if upscale > -1 or face_restoration > -1:
-                sio.emit("txt2img:progress", {"type": "postprocessing"})
-                eventlet.sleep(0)
+            self.check_if_stop()
 
             if upscale > -1:
                 self.esrgan = RealESRGAN()
                 output = self.esrgan.upscale(output, upscale)
                 self.esrgan = None
-            if face_restoration > -1:
+
+            self.check_if_stop()
+
+            if face_restoration:
                 self.gfpgan = GFPGAN()
                 output = self.gfpgan.restore(output, face_restoration)
                 self.gfpgan = None
@@ -153,3 +188,11 @@ class OsmosisModel:
                 )
 
             return {"image": output, "metadata": metadata}
+        except StopRequestedException:
+            print("Stop requested, stopping!", file=sys.stderr)
+            self.gfpgan = None
+            self.esrgan = None
+
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+            gc.collect()

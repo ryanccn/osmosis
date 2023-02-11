@@ -12,7 +12,7 @@ const store = useOsmosisStore();
     <LoadingScreen v-if="!store.connected" />
   </Transition>
 
-  <div class="w-screen lg:h-screen z-0 flex flex-col overflow-hidden">
+  <div class="w-screen z-0 flex flex-col">
     <TopBar />
     <ProgressBar />
     <RouterView />

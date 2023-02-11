@@ -8,7 +8,10 @@ const store = useOsmosisStore();
 
 const prompt = ref("");
 const negativePrompt = ref("");
-const seed = ref(-1);
+
+const steps = ref(40);
+const seed = ref(0);
+const seedRandom = ref(true);
 
 const upscale = ref(false);
 const upscaleScale = ref(2);
@@ -19,19 +22,20 @@ const generate = () => {
   store.txt2img(
     prompt.value,
     negativePrompt.value,
-    seed.value,
+    steps.value,
+    seedRandom.value ? -1 : seed.value,
     upscale.value ? upscaleScale.value : null,
     faceRestoration.value ? 0.5 : null
   );
 };
 
 const stopGenerate = () => {
-  console.warn("ASDF THIS ISN'T IMPLEMENTED YET AAAAAAA");
+  store.halt();
 };
 </script>
 
 <template>
-  <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] grow overflow-hidden">
+  <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] flex-grow">
     <div
       class="border-surface border-r-2 flex flex-col gap-y-4 p-5 overflow-y-scroll"
     >
@@ -49,15 +53,34 @@ const stopGenerate = () => {
         ></textarea>
       </label>
 
-      <label class="flex flex-col gap-y-2">
+      <div class="flex flex-col gap-y-2">
+        <span class="text-sm font-semibold">Steps</span>
+        <div class="flex flex-row gap-x-3 w-full">
+          <input
+            type="range"
+            min="1"
+            max="100"
+            v-model.number="steps"
+            class="grow"
+          />
+          <span>{{ steps }}</span>
+        </div>
+      </div>
+
+      <div class="flex flex-col gap-y-2">
         <span class="text-sm font-semibold">Seed</span>
+        <label class="flex flex-row gap-x-1 items-center self-end">
+          <input type="checkbox" v-model="seedRandom" />
+          <span class="font-medium text-sm">Random</span>
+        </label>
         <input
           type="number"
           class="osmosis form input"
-          placeholder="Random"
-          min="-1"
+          min="0"
+          v-model="seed"
+          :disabled="seedRandom"
         />
-      </label>
+      </div>
 
       <div class="flex flex-col gap-y-2">
         <h2 class="flex flex-row items-center gap-x-2">
@@ -86,7 +109,7 @@ const stopGenerate = () => {
         class="osmosis primary button mt-4"
         @click="generate"
         v-if="!store.txt2imgProgress?.type"
-        :disabled="!store.model"
+        :disabled="!store.model || !prompt.length"
       >
         Generate
       </button>

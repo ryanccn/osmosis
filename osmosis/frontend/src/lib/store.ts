@@ -65,6 +65,7 @@ export const useOsmosisStore = defineStore("osmosis", {
     txt2img(
       prompt: string,
       negativePrompt: string,
+      steps: number,
       seed: number,
       upscale: number | null,
       faceRestoration: number | null
@@ -73,6 +74,7 @@ export const useOsmosisStore = defineStore("osmosis", {
         ws.emit("txt2img", {
           prompt,
           negative_prompt: negativePrompt || null,
+          steps,
           seed,
 
           upscale,
@@ -99,6 +101,10 @@ export const useOsmosisStore = defineStore("osmosis", {
           resolve();
         });
       });
+    },
+
+    halt() {
+      ws.emit("stop");
     },
   },
 });

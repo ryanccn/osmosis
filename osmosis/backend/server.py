@@ -29,7 +29,7 @@ class OsmosisServer:
         )
         self.sio = SocketIO(self.app)
 
-        self.model = OsmosisModel()
+        self.model = OsmosisModel(sio=self.sio)
 
         diffusers.logging.set_verbosity_warning()
 
@@ -84,10 +84,13 @@ class OsmosisServer:
 
         @self.sio.on("txt2img")
         def txt2img(data):
-            output = self.model.txt2img(data, sio=self.sio)
-            file_name = save_image(output["image"], output["metadata"])
+            print(data)
+            output = self.model.txt2img(data)
 
-            self.sio.emit("txt2img:done", file_name)
+            if output:
+                save_image(output["image"], output["metadata"])
+
+            self.sio.emit("txt2img:done")
             eventlet.sleep(0)
 
         @self.sio.on("gallery")
