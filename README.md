@@ -17,7 +17,7 @@ An experimental Stable Diffusion web frontend.
 - [ ] [Image to image](https://huggingface.co/docs/diffusers/using-diffusers/img2img)
 - [ ] [Inpainting](https://huggingface.co/docs/diffusers/using-diffusers/inpaint) / outpainting
 - [ ] Training with [LoRA](https://huggingface.co/docs/diffusers/training/lora) / [Textual Inversion](https://huggingface.co/docs/diffusers/training/text_inversion) / [Dreambooth](https://huggingface.co/docs/diffusers/training/dreambooth)
-- [ ] [xFormers](https://github.com/facebookresearch/xformers) optimization
+- [x] [xFormers](https://github.com/facebookresearch/xformers) optimization
 - [x] [Apple Silicon](https://huggingface.co/docs/diffusers/optimization/mps) optimization
 
 ## System Requirements
@@ -43,10 +43,12 @@ to install. Alternatively, simple use `pip` to install globally:
 $ pip install [--user] osmosis
 ```
 
+If you're on a NVIDIA GPU, replace `osmosis` in the install scripts with `osmosis[xformers]` to enable [xFormers](https://github.com/facebookresearch/xformers) optimization support!
+
 ## Running
 
 ```
 $ osmosis
 ```
 
-is all you need.
+is all you need to start the web UI.

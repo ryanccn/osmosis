@@ -29,7 +29,11 @@ dependencies = [
 osmosis = "osmosis.cli:main"
 
 [project.optional-dependencies]
-dev = ["black"]
+"dev" = ["black"]
+"xformers" = [
+  "xformers~=0.0.16; sys_platform!='darwin'",
+  "triton; sys_platform=='linux'",
+]
 
 [tool.setuptools.dynamic]
 version = { attr = "osmosis.__version__" }

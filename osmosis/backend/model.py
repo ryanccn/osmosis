@@ -1,4 +1,5 @@
 from diffusers import StableDiffusionPipeline
+from diffusers.utils.import_utils import is_xformers_available
 from .restoration import RealESRGAN
 
 from flask_socketio import SocketIO
@@ -41,11 +42,15 @@ class OsmosisModel:
             safety_checker=None,
             torch_dtype=torch.float32,
         )
-        self.diffusers_model.to(auto_device())
 
-        self.diffusers_model.enable_attention_slicing()
         if torch.cuda.is_available():
             self.diffusers_model.enable_sequential_cpu_offload()
+        if is_xformers_available():
+            self.diffusers_model.enable_xformers_memory_efficient_attention()
+        else:
+            self.diffusers_model.enable_attention_slicing()
+
+        self.diffusers_model.to(auto_device())
 
         if system() == "Darwin":
             _ = self.diffusers_model("noop", num_inference_steps=1)
