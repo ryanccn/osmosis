@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { useOsmosisStore } from "@/lib/store";
 
 import GalleryView from "@/components/GalleryView.vue";
+import Switch from "@/components/Switch.vue";
 
 const store = useOsmosisStore();
 
@@ -67,12 +68,14 @@ const stopGenerate = () => {
         </div>
       </div>
 
-      <div class="flex flex-col gap-y-2">
-        <span class="text-sm font-semibold">Seed</span>
-        <label class="flex flex-row gap-x-1 items-center self-end">
-          <input type="checkbox" v-model="seedRandom" />
-          <span class="font-medium text-sm">Random</span>
-        </label>
+      <div class="flex flex-col gap-y-3">
+        <div class="flex flex-row items-center justify-between">
+          <span class="text-sm font-semibold">Seed</span>
+          <label class="flex flex-row gap-x-1 items-center self-end">
+            <Switch v-model="seedRandom" />
+            <span class="font-medium text-sm">Random</span>
+          </label>
+        </div>
         <input
           type="number"
           class="osmosis form input"
@@ -84,7 +87,7 @@ const stopGenerate = () => {
 
       <div class="flex flex-col gap-y-2">
         <h2 class="flex flex-row items-center gap-x-2">
-          <input type="checkbox" v-model="upscale" class="p-2" />
+          <Switch v-model="upscale" />
           <span class="text-lg font-semibold">Upscale</span>
         </h2>
 
@@ -100,7 +103,7 @@ const stopGenerate = () => {
 
       <div class="flex flex-col gap-y-2">
         <h2 class="flex flex-row items-center gap-x-2">
-          <input type="checkbox" v-model="faceRestoration" class="p-2" />
+          <Switch v-model="faceRestoration" />
           <span class="text-lg font-semibold">Face restoration</span>
         </h2>
       </div>
