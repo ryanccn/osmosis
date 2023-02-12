@@ -69,7 +69,11 @@ class OsmosisServer:
                 return
 
             if model["type"] == "diffusers":
-                self.model.load_diffusers(model["id"])
+                self.model.load_diffusers(
+                    model["id"],
+                    revision=model.get("revision", "main"),
+                    half=model.get("half", False),
+                )
             elif model["type"] == "coreml":
                 self.model.load_coreml(model["id"], model["mlpackages"])
 
@@ -82,10 +86,20 @@ class OsmosisServer:
             new_internal_id = uuid4().hex
 
             if model_type == "diffusers":
-                model_id = data["model_id"]
+                model_id = data.get("model_id", None)
+                revision = data.get("revision", None)
+                half = data.get("half", False)
 
                 prev_models = load_models()
-                prev_models[new_internal_id] = {"type": "diffusers", "id": model_id}
+                prev_models[new_internal_id] = {
+                    "type": "diffusers",
+                    "id": model_id,
+                    "half": half,
+                }
+
+                if revision:
+                    prev_models[new_internal_id]["revision"] = revision
+
                 save_models(prev_models)
             elif model_type == "coreml":
                 model_id = data["model_id"]

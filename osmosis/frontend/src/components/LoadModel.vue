@@ -9,6 +9,8 @@ import {
   DialogPanel,
   DialogTitle,
 } from "@headlessui/vue";
+import LoadModelTextInput from "./LoadModelTextInput.vue";
+import Switch from "./Switch.vue";
 
 const emit = defineEmits(["close"]);
 const props = defineProps<{ isOpen: boolean }>();
@@ -25,6 +27,9 @@ const store = useOsmosisStore();
 
 const tab = ref(Tabs.INDEX);
 const diffusersModelId = ref("");
+const diffusersRevision = ref("");
+const diffusersHalf = ref(false);
+
 const mlpackagesDir = ref("");
 
 const modelTypeToReadable = (str: string) => {
@@ -39,16 +44,33 @@ const loadModel = (internalId: string) => {
   });
 };
 
-const addDiffusersModel = (id: string) => {
-  store.addModel("diffusers", id).then(() => {
-    tab.value = Tabs.INDEX;
-  });
+const addDiffusersModel = () => {
+  if (!diffusersModelId.value) return;
+
+  store
+    .addModel({
+      type: "diffusers",
+      id: diffusersModelId.value,
+      revision: diffusersRevision.value,
+      half: diffusersHalf.value,
+    })
+    .then(() => {
+      tab.value = Tabs.INDEX;
+    });
 };
 
-const addCoreMLModel = (id: string, mlpackages: string) => {
-  store.addModel("coreml", id, mlpackages).then(() => {
-    tab.value = Tabs.INDEX;
-  });
+const addCoreMLModel = () => {
+  if (!diffusersModelId.value || !mlpackagesDir.value) return;
+
+  store
+    .addModel({
+      type: "coreml",
+      id: diffusersModelId.value,
+      mlpackages: mlpackagesDir.value,
+    })
+    .then(() => {
+      tab.value = Tabs.INDEX;
+    });
 };
 </script>
 
@@ -107,10 +129,16 @@ const addCoreMLModel = (id: string, mlpackages: string) => {
                   v-for="model in Object.entries(store.availableModels)"
                   :key="model[0]"
                 >
-                  <span class="text-lg font-semibold">{{ model[1].id }}</span>
+                  <span class="text-lg font-semibold"
+                    >{{ model[1].id
+                    }}<span class="text-gray-400" v-if="model[1].revision"
+                      >#{{ model[1].revision }}</span
+                    ></span
+                  >
                   <span>{{ modelTypeToReadable(model[1].type) }}</span>
                 </button>
               </template>
+
               <template v-else-if="tab === Tabs.ADD">
                 <button class="add-model-btn" @click="tab = Tabs.DIFFUSERS">
                   Diffusers
@@ -128,44 +156,39 @@ const addCoreMLModel = (id: string, mlpackages: string) => {
               </template>
 
               <template v-else-if="tab === Tabs.DIFFUSERS">
-                <input
-                  type="text"
-                  class="osmosis form input w-full"
+                <LoadModelTextInput
+                  description="Model ID on Hugging Face"
                   v-model="diffusersModelId"
                 />
+                <LoadModelTextInput
+                  description="Revision (optional)"
+                  v-model="diffusersRevision"
+                  placeholder="main"
+                />
+                <div class="flex flex-row items-center gap-x-2">
+                  <Switch v-model="diffusersHalf" />
+                  <span>Half precision?</span>
+                </div>
                 <button
                   class="osmosis primary button"
-                  @click="addDiffusersModel(diffusersModelId)"
+                  @click="addDiffusersModel()"
                 >
                   Add
                 </button>
               </template>
               <template v-else-if="tab === Tabs.COREML">
-                <label class="flex flex-col gap-y-1 w-full">
-                  <span class="text-sm font-semibold">
-                    Model ID on Hugging Face
-                  </span>
-                  <input
-                    type="text"
-                    class="osmosis form input w-full"
-                    v-model="diffusersModelId"
-                  />
-                </label>
-
-                <label class="flex flex-col gap-y-1 w-full">
-                  <span class="text-sm font-semibold">
-                    Converted directory with .mlpackages
-                  </span>
-                  <input
-                    type="text"
-                    class="osmosis form input w-full"
-                    v-model="mlpackagesDir"
-                  />
-                </label>
+                <LoadModelTextInput
+                  description="Model ID on Hugging Face"
+                  v-model="diffusersModelId"
+                />
+                <LoadModelTextInput
+                  description="Converted directory with .mlpackages"
+                  v-model="mlpackagesDir"
+                />
 
                 <button
                   class="osmosis primary button"
-                  @click="addCoreMLModel(diffusersModelId, mlpackagesDir)"
+                  @click="addCoreMLModel()"
                 >
                   Add
                 </button>

@@ -53,7 +53,7 @@ class OsmosisModel:
             torch.cuda.empty_cache()
         gc.collect()
 
-    def load_diffusers(self, model_id: str, revision: str = "main"):
+    def load_diffusers(self, model_id: str, revision="main", half=False):
         self.unload_model()
 
         self.type = "diffusers"
@@ -63,7 +63,7 @@ class OsmosisModel:
             model_id,
             revision=revision,
             safety_checker=None,
-            torch_dtype=torch.float32,
+            torch_dtype=torch.float16 if half else torch.float32,
         )
 
         if torch.cuda.is_available():

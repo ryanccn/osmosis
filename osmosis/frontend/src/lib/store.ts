@@ -7,7 +7,12 @@ export const useOsmosisStore = defineStore("osmosis", {
       connected: false,
       model: null as null | { type: "diffusers" | "coreml"; name: string },
       availableModels: {} as {
-        [internalId: string]: { type: "diffusers" | "coreml"; id: string };
+        [internalId: string]: {
+          type: "diffusers" | "coreml";
+          id: string;
+          revision?: string;
+          half?: boolean;
+        };
       },
       coreMLAvailable: false,
       progress: {
@@ -55,16 +60,23 @@ export const useOsmosisStore = defineStore("osmosis", {
       });
     },
 
-    addModel(type: "diffusers" | "coreml", id: string, mlpackages?: string) {
+    addModel(
+      data:
+        | { type: "diffusers"; id: string; revision?: string; half: boolean }
+        | { type: "coreml"; id: string; mlpackages: string }
+    ) {
       return new Promise<void>((resolve) => {
         ws.emit(
           "add_model",
           {
-            model_type: type,
-            model_id: id,
-            ...(type === "coreml" ? { mlpackages_dir: mlpackages } : {}),
+            model_type: data.type,
+            model_id: data.id,
+            ...(data.type === "coreml"
+              ? { mlpackages_dir: data.mlpackages }
+              : { revision: data.revision || null, half: data.half }),
           },
           () => {
+            this.refreshInfo();
             resolve();
           }
         );
