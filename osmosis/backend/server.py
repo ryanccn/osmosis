@@ -2,11 +2,11 @@ from flask import Flask, send_from_directory
 from flask_socketio import SocketIO
 import eventlet
 
-from ..frontend import dist as frontend
+from osmosis.frontend import dist as frontend
 
-from .model import OsmosisModel
-from .config import Config
-from .fs import save_image, load_models, save_models
+from osmosis.backend.model import OsmosisModel
+from osmosis.backend.config import Config
+from osmosis.backend.fs import save_image, load_models, save_models
 
 from rich import print
 

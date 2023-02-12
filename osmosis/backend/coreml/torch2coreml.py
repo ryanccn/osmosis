@@ -3,7 +3,7 @@
 # Copyright (C) 2022 Apple Inc. All Rights Reserved.
 #
 
-from . import unet
+from osmosis.backend.coreml import unet, chunk_mlprogram
 
 import argparse
 from collections import OrderedDict, defaultdict
@@ -20,7 +20,6 @@ logger.setLevel(logging.INFO)
 
 import numpy as np
 import os
-from . import chunk_mlprogram
 import requests
 import shutil
 import time

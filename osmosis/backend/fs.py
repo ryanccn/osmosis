@@ -1,5 +1,5 @@
-from .config import Config
-from .utils import pad_int
+from osmosis.backend.config import Config
+from osmosis.backend.utils import pad_int
 
 from PIL import PngImagePlugin, Image
 

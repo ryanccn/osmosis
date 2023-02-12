@@ -3,7 +3,7 @@
 # Copyright (C) 2022 Apple Inc. All Rights Reserved.
 #
 
-import argparse
+# import argparse
 
 from diffusers.pipeline_utils import DiffusionPipeline
 from diffusers.pipelines.stable_diffusion import StableDiffusionPipelineOutput
@@ -27,12 +27,13 @@ logger = logging.getLogger(__name__)
 logger.setLevel(logging.INFO)
 
 import numpy as np
-import os
 
-from .coreml_model import (
+# import os
+
+from osmosis.backend.coreml.coreml_model import (
     CoreMLModel,
     _load_mlpackage,
-    get_available_compute_units,
+    # get_available_compute_units,
 )
 
 import time

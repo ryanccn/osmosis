@@ -26,7 +26,7 @@ logger.setLevel(logging.INFO)
 
 import numpy as np
 import os
-from . import torch2coreml
+from osmosis.backend.coreml import torch2coreml
 import shutil
 import time
 

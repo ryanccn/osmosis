@@ -1,18 +1,18 @@
 from diffusers import StableDiffusionPipeline
-from .coreml.pipeline import (
+from osmosis.backend.coreml.pipeline import (
     SCHEDULER_MAP,
     get_coreml_pipe,
 )
-from .restoration import RealESRGAN, GFPGAN
+from osmosis.backend.restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
 
 import torch
 import numpy as np
 from rich import print
-from .utils import auto_device
+from osmosis.backend.utils import auto_device
 from diffusers.utils.import_utils import is_xformers_available
-from .. import __version__
+from osmosis import __version__
 
 from threading import Event
 from platform import system

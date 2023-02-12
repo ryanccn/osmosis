@@ -3,7 +3,7 @@
 # Copyright (C) 2022 Apple Inc. All Rights Reserved.
 #
 
-from .layer_norm import LayerNormANE
+from osmosis.backend.coreml.layer_norm import LayerNormANE
 
 from diffusers.configuration_utils import ConfigMixin, register_to_config
 from diffusers import ModelMixin

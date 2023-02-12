@@ -1,6 +1,6 @@
-from .backend.server import OsmosisServer
-from .backend.config import Config
-from .backend.utils import fix_torch_funcs_mps
+from osmosis.backend.server import OsmosisServer
+from osmosis.backend.config import Config
+from osmosis.backend.utils import fix_torch_funcs_mps
 
 import click
 
