@@ -17,13 +17,6 @@ import packaging.version as semver
 
 
 class OsmosisServer:
-    app: Flask
-    sio: SocketIO
-
-    port: int
-
-    model: OsmosisModel
-
     def __init__(self, port: int):
         self.port = port
         self.app = Flask(

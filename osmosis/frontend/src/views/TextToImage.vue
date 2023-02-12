@@ -93,7 +93,7 @@ const stopGenerate = () => {
 
         <select
           class="osmosis form input"
-          v-model="upscaleScale"
+          v-model.number="upscaleScale"
           :disabled="!upscale"
         >
           <option value="2">2x</option>

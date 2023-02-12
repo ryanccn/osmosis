@@ -7,6 +7,7 @@ from tqdm import tqdm
 
 from osmosis.backend.config import Config
 import os
+import gc
 
 
 def check_download(url: str, file_path: str):
@@ -39,10 +40,6 @@ def check_download(url: str, file_path: str):
 
 
 class RealESRGAN:
-    net = None
-    scales: str
-    file_paths: list[str] = []
-
     def __init__(self):
         from realesrgan.archs.srvgg_arch import SRVGGNetCompact
 
@@ -61,6 +58,8 @@ class RealESRGAN:
             upscale=4,
             act_type="prelu",
         )
+
+        self.file_paths = []
 
         for file in download_urls:
             abs_file_path = os.path.join(Config.ESRGAN_MODELS_DIR, file)
@@ -89,10 +88,11 @@ class RealESRGAN:
             bgr_image, outscale=scale, alpha_upsampler="realesrgan"
         )
 
+        upsampler = None
+
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-
-        upsampler = None
+        gc.collect()
 
         return Image.fromarray(output[..., ::-1])
 
@@ -127,10 +127,11 @@ class GFPGAN:
 
         _, _, output = upsampler.enhance(bgr_image, paste_back=True, weight=strength)
 
-        if torch.cuda.is_available():
-            torch.cuda.empty_cache()
-
         upsampler = None
         os.chdir(cwd)
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
 
         return Image.fromarray(output[..., ::-1])

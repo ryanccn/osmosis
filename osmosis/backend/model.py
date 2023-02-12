@@ -30,16 +30,6 @@ class StopRequestedException(Exception):
 
 
 class OsmosisModel:
-    type: Literal["diffusers"] | Literal["coreml"] | None
-    name: str | None
-    sio: SocketIO | None
-
-    diffusers_model: StableDiffusionPipeline | None
-    coreml_model: CoreMLStableDiffusionPipeline | None
-
-    esrgan: RealESRGAN | None
-    gfpgan: GFPGAN | None
-
     def __init__(self, sio: SocketIO):
         self.type = None
         self.name = None
