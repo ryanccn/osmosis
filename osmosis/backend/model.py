@@ -22,8 +22,6 @@ import eventlet
 import sys
 import gc
 
-from typing import Literal
-
 
 class StopRequestedException(Exception):
     pass
@@ -45,12 +43,21 @@ class OsmosisModel:
         def stop():
             self.stop_requested.set()
 
+    def unload_model(self):
+        self.type = None
+        self.name = None
+        self.diffusers_model = None
+        self.coreml_model = None
+
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+        gc.collect()
+
     def load_diffusers(self, model_id: str, revision: str = "main"):
+        self.unload_model()
+
         self.type = "diffusers"
         self.name = model_id
-
-        self.diffusers_model = None
-        gc.collect()
 
         self.diffusers_model = StableDiffusionPipeline.from_pretrained(
             model_id,
@@ -74,6 +81,8 @@ class OsmosisModel:
     def load_coreml(self, model_id, mlpackages_dir, scheduler=None):
         if system() != "Darwin":
             raise NotImplementedError()
+
+        self.unload_model()
 
         self.type = "coreml"
         self.name = model_id
