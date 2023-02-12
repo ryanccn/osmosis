@@ -9,6 +9,7 @@ export const useOsmosisStore = defineStore("osmosis", {
       availableModels: {} as {
         [internalId: string]: { type: "diffusers" | "coreml"; id: string };
       },
+      coreMLAvailable: false,
       progress: {
         type: null as "determinate" | "indeterminate" | null,
         task: "",
@@ -54,12 +55,48 @@ export const useOsmosisStore = defineStore("osmosis", {
       });
     },
 
-    addModel(type: "diffusers" | "coreml", id: string) {
+    addModel(type: "diffusers" | "coreml", id: string, mlpackages?: string) {
       return new Promise<void>((resolve) => {
-        ws.emit("add_model", { model_type: type, model_id: id }, () => {
-          resolve();
-        });
+        ws.emit(
+          "add_model",
+          {
+            model_type: type,
+            model_id: id,
+            ...(type === "coreml" ? { mlpackages_dir: mlpackages } : {}),
+          },
+          () => {
+            resolve();
+          }
+        );
       });
+    },
+
+    refreshInfo() {
+      ws.emit(
+        "info",
+        async ({
+          model,
+          models,
+          coreml_available,
+        }: {
+          model: { type: "diffusers" | "coreml"; name: string };
+          models: any;
+          coreml_available: boolean;
+        }) => {
+          const store = useOsmosisStore();
+
+          store.model =
+            model.type === null ? null : { type: model.type, name: model.name };
+          store.availableModels = models;
+
+          store.coreMLAvailable = coreml_available;
+
+          await store.refreshGallery();
+          if (!store.gallerySelected) store.gallerySelected = store.gallery[0];
+
+          store.connected = true;
+        }
+      );
     },
 
     txt2img(
@@ -111,27 +148,7 @@ export const useOsmosisStore = defineStore("osmosis", {
 
 export const setupStoreListeners = () => {
   ws.on("connect", () => {
-    ws.emit(
-      "info",
-      async ({
-        model,
-        models,
-      }: {
-        model: { type: "diffusers" | "coreml"; name: string };
-        models: any;
-      }) => {
-        const store = useOsmosisStore();
-
-        store.model =
-          model.type === null ? null : { type: model.type, name: model.name };
-        store.availableModels = models;
-
-        await store.refreshGallery();
-        store.gallerySelected = store.gallery[0];
-
-        store.connected = true;
-      }
-    );
+    useOsmosisStore().refreshInfo();
   });
 
   ws.on("disconnect", () => {

@@ -12,6 +12,8 @@ import diffusers
 
 from uuid import uuid4
 import os
+import platform
+import packaging.version as semver
 
 
 class OsmosisServer:
@@ -48,9 +50,16 @@ class OsmosisServer:
     def register_ws_handlers(self):
         @self.sio.on("info")
         def info():
+            coreml_available = False
+            if platform.system() == "Darwin":
+                macos_version = semver.parse(platform.mac_ver()[0])
+                coreml_available = macos_version >= semver.parse("13.1")
+
             return {
                 "model": {"type": self.model.type, "name": self.model.name},
                 "models": load_models(),
+                "coreml_available": platform.system() == "Darwin"
+                and platform.mac_ver(),
             }
 
         @self.sio.on("load_model")
@@ -66,14 +75,16 @@ class OsmosisServer:
 
             if model["type"] == "diffusers":
                 self.model.load_diffusers(model["id"])
+            elif model["type"] == "coreml":
+                self.model.load_coreml(model["id"], model["mlpackages"])
 
             print(f"Loaded model {model_internal_id}")
 
         @self.sio.on("add_model")
-        def add_model(data):
-            model_type = "diffusers"
+        def add_model(data: dict):
+            model_type = data.get("model_type", "diffusers")
 
-            new_internal_id = uuid4().hex[:10]
+            new_internal_id = uuid4().hex
 
             if model_type == "diffusers":
                 model_id = data["model_id"]
@@ -81,6 +92,19 @@ class OsmosisServer:
                 prev_models = load_models()
                 prev_models[new_internal_id] = {"type": "diffusers", "id": model_id}
                 save_models(prev_models)
+            elif model_type == "coreml":
+                model_id = data["model_id"]
+                mlpackages_dir = data["mlpackages_dir"]
+
+                prev_models = load_models()
+                prev_models[new_internal_id] = {
+                    "type": "coreml",
+                    "id": model_id,
+                    "mlpackages": mlpackages_dir,
+                }
+                save_models(prev_models)
+            else:
+                raise NotImplementedError()
 
         @self.sio.on("txt2img")
         def txt2img(data):

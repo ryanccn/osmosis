@@ -25,6 +25,13 @@ const store = useOsmosisStore();
 
 const tab = ref(Tabs.INDEX);
 const diffusersModelId = ref("");
+const mlpackagesDir = ref("");
+
+const modelTypeToReadable = (str: string) => {
+  if (str === "diffusers") return "Diffusers";
+  else if (str === "coreml") return "CoreML";
+  return "Unknown";
+};
 
 const loadModel = (internalId: string) => {
   store.loadModel(internalId).then(() => {
@@ -34,6 +41,12 @@ const loadModel = (internalId: string) => {
 
 const addDiffusersModel = (id: string) => {
   store.addModel("diffusers", id).then(() => {
+    tab.value = Tabs.INDEX;
+  });
+};
+
+const addCoreMLModel = (id: string, mlpackages: string) => {
+  store.addModel("coreml", id, mlpackages).then(() => {
     tab.value = Tabs.INDEX;
   });
 };
@@ -89,36 +102,31 @@ const addDiffusersModel = (id: string) => {
 
               <template v-if="tab === Tabs.INDEX">
                 <button
-                  class="px-4 py-3 text-lg bg-surface hover:bg-surface-hover transition-all rounded-md w-full"
+                  class="px-4 py-3 flex flex-col items-start gap-y-1 bg-surface hover:bg-surface-hover transition-all rounded-md w-full"
                   @click="loadModel(model[0])"
                   v-for="model in Object.entries(store.availableModels)"
                   :key="model[0]"
                 >
-                  {{ model[1].id }}
+                  <span class="text-lg font-semibold">{{ model[1].id }}</span>
+                  <span>{{ modelTypeToReadable(model[1].type) }}</span>
                 </button>
               </template>
               <template v-else-if="tab === Tabs.ADD">
-                <button
-                  class="w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md"
-                  @click="tab = Tabs.DIFFUSERS"
-                >
+                <button class="add-model-btn" @click="tab = Tabs.DIFFUSERS">
                   Diffusers
                 </button>
                 <button
-                  class="w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md"
+                  class="add-model-btn"
                   @click="tab = Tabs.COREML"
-                  disabled
+                  v-if="store.coreMLAvailable"
                 >
-                  CoreML model (macOS)
+                  CoreML model
                 </button>
-                <button
-                  class="w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md"
-                  @click="tab = Tabs.CKPT"
-                  disabled
-                >
+                <button class="add-model-btn" @click="tab = Tabs.CKPT" disabled>
                   Checkpoint file
                 </button>
               </template>
+
               <template v-else-if="tab === Tabs.DIFFUSERS">
                 <input
                   type="text"
@@ -132,6 +140,36 @@ const addDiffusersModel = (id: string) => {
                   Add
                 </button>
               </template>
+              <template v-else-if="tab === Tabs.COREML">
+                <label class="flex flex-col gap-y-1 w-full">
+                  <span class="text-sm font-semibold">
+                    Model ID on Hugging Face
+                  </span>
+                  <input
+                    type="text"
+                    class="osmosis form input w-full"
+                    v-model="diffusersModelId"
+                  />
+                </label>
+
+                <label class="flex flex-col gap-y-1 w-full">
+                  <span class="text-sm font-semibold">
+                    Converted directory with .mlpackages
+                  </span>
+                  <input
+                    type="text"
+                    class="osmosis form input w-full"
+                    v-model="mlpackagesDir"
+                  />
+                </label>
+
+                <button
+                  class="osmosis primary button"
+                  @click="addCoreMLModel(diffusersModelId, mlpackagesDir)"
+                >
+                  Add
+                </button>
+              </template>
             </DialogPanel>
           </TransitionChild>
         </div>
@@ -139,3 +177,11 @@ const addDiffusersModel = (id: string) => {
     </Dialog>
   </TransitionRoot>
 </template>
+
+<style scoped>
+.add-model-btn {
+  @apply w-full px-4 py-3 text-lg font-medium bg-surface hover:bg-surface-hover transition-all rounded-md;
+  @apply focus:outline-none focus:ring focus:ring-accent/50;
+  @apply disabled:opacity-75;
+}
+</style>

@@ -1,5 +1,9 @@
 from diffusers import StableDiffusionPipeline
-from diffusers.utils.import_utils import is_xformers_available
+from .coreml.pipeline import (
+    CoreMLStableDiffusionPipeline,
+    SCHEDULER_MAP,
+    get_coreml_pipe,
+)
 from .restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
@@ -7,6 +11,7 @@ from flask_socketio import SocketIO
 import torch
 import numpy as np
 from .utils import auto_device
+from diffusers.utils.import_utils import is_xformers_available
 from .. import __version__
 
 from threading import Event
@@ -30,6 +35,7 @@ class OsmosisModel:
     sio: SocketIO | None
 
     diffusers_model: StableDiffusionPipeline | None
+    coreml_model: CoreMLStableDiffusionPipeline | None
 
     esrgan: RealESRGAN | None
     gfpgan: GFPGAN | None
@@ -37,7 +43,10 @@ class OsmosisModel:
     def __init__(self, sio: SocketIO):
         self.type = None
         self.name = None
+
         self.diffusers_model = None
+        self.coreml_model = None
+
         self.sio = sio
 
         self.stop_requested = Event()
@@ -72,6 +81,31 @@ class OsmosisModel:
         if system() == "Darwin":
             _ = self.diffusers_model("noop", num_inference_steps=1)
 
+    def load_coreml(self, model_id, mlpackages_dir, scheduler=None):
+        if system() != "Darwin":
+            raise NotImplementedError()
+
+        self.type = "coreml"
+        self.name = model_id
+
+        pytorch_pipe = StableDiffusionPipeline.from_pretrained(model_id)
+
+        user_specified_scheduler = None
+        if scheduler is not None:
+            user_specified_scheduler = SCHEDULER_MAP[scheduler].from_config(
+                pytorch_pipe.scheduler.config
+            )
+
+        coreml_pipe = get_coreml_pipe(
+            pytorch_pipe=pytorch_pipe,
+            mlpackages_dir=mlpackages_dir,
+            model_version=model_id,
+            compute_unit="ALL",
+            scheduler_override=user_specified_scheduler,
+        )
+
+        self.coreml_model = coreml_pipe
+
     def check_if_stop(self):
         if self.stop_requested.is_set():
             raise StopRequestedException()
@@ -98,6 +132,7 @@ class OsmosisModel:
 
         try:
             self.stop_requested.clear()
+
             if self.type == "diffusers":
 
                 def diffusers_callback(
@@ -125,10 +160,34 @@ class OsmosisModel:
                     callback=diffusers_callback,
                     generator=generator,
                 ).images[0]
+            elif self.type == "coreml":
+
+                def diffusers_callback(
+                    step: int, timestep: int, latents: torch.FloatTensor
+                ):
+                    self.check_if_stop()
+                    self.sio.emit(
+                        "txt2img:progress", {"type": "main", "data": [step, steps]}
+                    )
+                    eventlet.sleep(0)
+
+                np.random.seed(seed)
 
                 self.check_if_stop()
+
+                output = self.coreml_model(
+                    prompt=prompt,
+                    negative_prompt=negative_prompt,
+                    width=self.coreml_model.width,
+                    height=self.coreml_model.height,
+                    num_inference_steps=steps,
+                    callback_steps=1,
+                    callback=diffusers_callback,
+                ).images[0]
             else:
                 raise NotImplementedError()
+
+            self.check_if_stop()
 
             if upscale > -1 or face_restoration:
                 self.sio.emit("txt2img:progress", {"type": "postprocessing"})
