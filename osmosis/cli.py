@@ -23,9 +23,15 @@ fix_torch_funcs_mps()
     help="Data directory for storing outputs",
     type=click.Path(exists=False, dir_okay=True, file_okay=False, writable=True),
 )
-def main(port: int = 26538, data_dir: str | None = None):
+@click.option(
+    "--show-step-latents",
+    is_flag=True,
+    help="Show in-progress images during generation",
+)
+def main(port: int = 26538, data_dir: str | None = None, show_step_latents=False):
     """Osmosis is an experimental Stable Diffusion web frontend."""
     Config.DATA_DIR = data_dir or Config.DATA_DIR
+    Config.SHOW_STEP_LATENTS = show_step_latents or Config.SHOW_STEP_LATENTS
 
     server = OsmosisServer(port=port)
     server.start()

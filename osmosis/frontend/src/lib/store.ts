@@ -19,6 +19,7 @@ export const useOsmosisStore = defineStore("osmosis", {
         type: null as "determinate" | "indeterminate" | null,
         task: "",
         data: [0, 0],
+        image: null as string | null,
       },
       gallery: [] as string[],
       gallerySelected: null as string | null,
@@ -136,6 +137,7 @@ export const useOsmosisStore = defineStore("osmosis", {
         ws.once("txt2img:done", async () => {
           this.progress.type = null;
           this.progress.task = "";
+          this.progress.image = null;
           await this.refreshGallery();
           this.gallerySelected = this.gallery[0];
           resolve();
@@ -169,10 +171,19 @@ export const setupStoreListeners = () => {
 
   ws.on(
     "txt2img:progress",
-    ({ type, data }: { type: string; data: [number, number] }) => {
+    ({
+      type,
+      data,
+      image,
+    }: {
+      type: string;
+      data: [number, number];
+      image: string;
+    }) => {
       if (type === "main") {
         useOsmosisStore().progress.type = "determinate";
         useOsmosisStore().progress.data = data;
+        useOsmosisStore().progress.image = image;
       } else if (type === "postprocessing") {
         useOsmosisStore().progress.type = "indeterminate";
       }

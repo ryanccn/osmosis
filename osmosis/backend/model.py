@@ -9,15 +9,18 @@ from flask_socketio import SocketIO
 
 import torch
 import numpy as np
-from rich import print
+
+from osmosis.backend.config import Config
 from osmosis.backend.utils import auto_device
-from diffusers.utils.import_utils import is_xformers_available
 from osmosis import __version__
 
+from diffusers.utils.import_utils import is_xformers_available
+
+import eventlet
 from threading import Event
 from platform import system
 import random
-import eventlet
+from rich import print
 
 import sys
 import gc
@@ -138,10 +141,31 @@ class OsmosisModel:
                     step: int, timestep: int, latents: torch.FloatTensor
                 ):
                     self.check_if_stop()
+
+                    step_image = None
+
+                    if Config.SHOW_STEP_LATENTS:
+                        import io
+
+                        step_image = self.diffusers_model.numpy_to_pil(
+                            self.diffusers_model.decode_latents(latents)
+                        )[0]
+                        buffered = io.BytesIO()
+                        step_image.save(buffered, format="JPEG")
+                        del step_image
+
+                        from base64 import b64encode
+
+                        step_image = f"data:image/jpeg;base64,{b64encode(buffered.getvalue()).decode('utf-8')}"
+                        del buffered
+
                     self.sio.emit(
-                        "txt2img:progress", {"type": "main", "data": [step, steps]}
+                        "txt2img:progress",
+                        {"type": "main", "data": [step, steps], "image": step_image},
                     )
                     eventlet.sleep(0)
+
+                    del step_image
 
                 generator = torch.Generator(
                     device="cuda" if torch.cuda.is_available() else "cpu"
@@ -247,7 +271,7 @@ class OsmosisModel:
                 )
 
             return {"image": output, "metadata": metadata}
-        except StopRequestedException:
+        except (StopRequestedException, KeyboardInterrupt):
             print("[yellow]Stop requested, stopping![/yellow]", file=sys.stderr)
             self.gfpgan = None
             self.esrgan = None

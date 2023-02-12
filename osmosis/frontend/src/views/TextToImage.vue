@@ -125,9 +125,14 @@ const stopGenerate = () => {
       <div class="flex flex-row gap-x-3"></div>
 
       <img
+        :src="store.progress.image"
+        class="block rounded-lg object-contain max-w-full max-h-full mx-auto"
+        v-if="store.progress.image"
+      />
+      <img
         :src="`/outputs/${store.gallerySelected}`"
         class="block rounded-lg object-contain max-w-full max-h-full mx-auto"
-        v-if="store.gallerySelected"
+        v-else-if="store.gallerySelected"
       />
     </div>
 

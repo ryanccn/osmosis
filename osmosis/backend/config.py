@@ -11,3 +11,5 @@ class Config:
     OUTPUTS_DIR = ensure_exists(os.path.join(DATA_DIR, "outputs"))
     ESRGAN_MODELS_DIR = ensure_exists(os.path.join(DATA_DIR, "esrgan"))
     GFPGAN_MODELS_DIR = ensure_exists(os.path.join(DATA_DIR, "gfpgan"))
+
+    SHOW_STEP_LATENTS = False
