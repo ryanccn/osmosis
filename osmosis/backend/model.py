@@ -1,8 +1,4 @@
 from diffusers import StableDiffusionPipeline
-from osmosis.backend.coreml.pipeline import (
-    SCHEDULER_MAP,
-    get_coreml_pipe,
-)
 from osmosis.backend.restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
@@ -84,6 +80,11 @@ class OsmosisModel:
     def load_coreml(self, model_id, mlpackages_dir, scheduler=None):
         if system() != "Darwin":
             raise NotImplementedError()
+
+        from osmosis.backend.coreml.pipeline import (
+            SCHEDULER_MAP,
+            get_coreml_pipe,
+        )
 
         self.unload_model()
 
