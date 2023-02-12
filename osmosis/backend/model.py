@@ -1,6 +1,5 @@
 from diffusers import StableDiffusionPipeline
 from .coreml.pipeline import (
-    CoreMLStableDiffusionPipeline,
     SCHEDULER_MAP,
     get_coreml_pipe,
 )
@@ -10,6 +9,7 @@ from flask_socketio import SocketIO
 
 import torch
 import numpy as np
+from rich import print
 from .utils import auto_device
 from diffusers.utils.import_utils import is_xformers_available
 from .. import __version__
@@ -239,7 +239,7 @@ class OsmosisModel:
 
             return {"image": output, "metadata": metadata}
         except StopRequestedException:
-            print("Stop requested, stopping!", file=sys.stderr)
+            print("[yellow]Stop requested, stopping![/yellow]", file=sys.stderr)
             self.gfpgan = None
             self.esrgan = None
 

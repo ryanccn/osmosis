@@ -8,10 +8,13 @@ from .model import OsmosisModel
 from .config import Config
 from .fs import save_image, load_models, save_models
 
+from rich import print
+
 import diffusers
 
 from uuid import uuid4
 import os
+import sys
 import platform
 import packaging.version as semver
 
@@ -63,7 +66,7 @@ class OsmosisServer:
             model = models.get(model_internal_id, None)
 
             if not model:
-                print(f"Unknown model {model_internal_id}")
+                print(f"Unknown model {model_internal_id}", file=sys.stderr)
                 return
 
             if model["type"] == "diffusers":
@@ -71,7 +74,7 @@ class OsmosisServer:
             elif model["type"] == "coreml":
                 self.model.load_coreml(model["id"], model["mlpackages"])
 
-            print(f"Loaded model {model_internal_id}")
+            print(f"[green]Loaded model {model_internal_id}[/green]")
 
         @self.sio.on("add_model")
         def add_model(data: dict):
@@ -124,5 +127,8 @@ class OsmosisServer:
             return {"files": files}
 
     def start(self):
-        print(f"Server started on http://localhost:{self.port}/")
+        print(
+            f"[bold]Osmosis[/bold] started on [blue]http://localhost:{self.port}/[/blue]"
+        )
+
         self.sio.run(self.app, port=self.port, debug=os.environ.get("DEBUG") == "1")
