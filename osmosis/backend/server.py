@@ -54,8 +54,7 @@ class OsmosisServer:
             return {
                 "model": {"type": self.model.type, "name": self.model.name},
                 "models": load_models(),
-                "coreml_available": platform.system() == "Darwin"
-                and platform.mac_ver(),
+                "coreml_available": coreml_available,
             }
 
         @self.sio.on("load_model")
