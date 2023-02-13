@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@headlessui/vue": "^1.7.9",
+    "@vueuse/core": "^9.12.0",
     "pinia": "^2.0.28",
     "socket.io-client": "^4.5.4",
     "vue": "^3.2.45",

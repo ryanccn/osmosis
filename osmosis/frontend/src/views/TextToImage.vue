@@ -2,6 +2,7 @@
 import { ref } from "vue";
 import { useOsmosisStore } from "@/lib/store";
 
+import { onKeyStroke } from "@vueuse/core";
 import GalleryView from "@/components/GalleryView.vue";
 import Switch from "@/components/Switch.vue";
 
@@ -33,6 +34,13 @@ const generate = () => {
 const stopGenerate = () => {
   store.halt();
 };
+
+onKeyStroke("Enter", (e) => {
+  if (e.metaKey) {
+    e.preventDefault();
+    generate();
+  }
+});
 </script>
 
 <template>
