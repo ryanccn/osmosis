@@ -63,6 +63,7 @@ class OsmosisModel:
             revision=revision,
             safety_checker=None,
             torch_dtype=torch.float16 if half else torch.float32,
+            custom_pipeline="lpw_stable_diffusion",
         )
 
         if torch.cuda.is_available():
