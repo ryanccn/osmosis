@@ -13,7 +13,7 @@ requires-python = ">=3.9, <3.11"
 dynamic = ["version"]
 
 dependencies = [
-  "diffusers[torch]~=0.11",
+  "diffusers[torch]~=0.12",
   "coremltools; sys_platform=='darwin'",
   "transformers",
   "accelerate",

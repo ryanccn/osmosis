@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useOsmosisStore } from "@/lib/store";
+import { multiplesOf64 } from "@/lib/utils";
 
 import { onKeyStroke } from "@vueuse/core";
 import GalleryView from "@/components/GalleryView.vue";
@@ -10,6 +11,9 @@ const store = useOsmosisStore();
 
 const prompt = ref("");
 const negativePrompt = ref("");
+
+const width = ref(512);
+const height = ref(512);
 
 const steps = ref(40);
 const seed = ref(0);
@@ -21,14 +25,16 @@ const upscaleScale = ref(2);
 const faceRestoration = ref(false);
 
 const generate = () => {
-  store.txt2img(
-    prompt.value,
-    negativePrompt.value,
-    steps.value,
-    seedRandom.value ? -1 : seed.value,
-    upscale.value ? upscaleScale.value : null,
-    faceRestoration.value ? 0.5 : null
-  );
+  store.txt2img({
+    prompt: prompt.value,
+    negativePrompt: negativePrompt.value,
+    width: width.value,
+    height: height.value,
+    steps: steps.value,
+    seed: seedRandom.value ? -1 : seed.value,
+    upscale: upscale.value ? upscaleScale.value : null,
+    faceRestoration: faceRestoration.value ? 0.5 : null,
+  });
 };
 
 const stopGenerate = () => {
@@ -46,7 +52,7 @@ onKeyStroke("Enter", (e) => {
 <template>
   <div class="grid grid-cols-1 lg:grid-cols-[1fr_2fr_1fr] h-osmosis-content">
     <div
-      class="border-surface border-r-2 flex flex-col gap-y-4 p-5 h-osmosis-content overflow-y-scroll"
+      class="border-surface border-r-2 flex flex-col gap-y-6 p-5 h-osmosis-content overflow-y-scroll"
     >
       <label class="flex flex-col gap-y-2">
         <span class="text-sm font-semibold">Prompt</span>
@@ -59,8 +65,43 @@ onKeyStroke("Enter", (e) => {
         <span class="text-sm font-semibold">Negative prompt</span>
         <textarea
           class="osmosis form input text-sm min-h-[5rem] resize-none"
+          v-model="negativePrompt"
         ></textarea>
       </label>
+
+      <button
+        class="osmosis primary button my-4"
+        @click="generate"
+        v-if="!store.txt2imgProgress?.type"
+        :disabled="!store.model || !prompt.length"
+      >
+        Generate
+      </button>
+      <button class="osmosis danger button my-4" @click="stopGenerate" v-else>
+        Stop
+      </button>
+
+      <div class="flex flex-row gap-x-6">
+        <div class="flex flex-col gap-y-2 w-full">
+          <h2 class="text-sm font-semibold">Width</h2>
+
+          <select class="osmosis form input" v-model="width">
+            <option :key="size" :value="size" v-for="size in multiplesOf64">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+
+        <div class="flex flex-col gap-y-2 w-full">
+          <h2 class="text-sm font-semibold">Height</h2>
+
+          <select class="osmosis form input" v-model="height">
+            <option :key="size" :value="size" v-for="size in multiplesOf64">
+              {{ size }}
+            </option>
+          </select>
+        </div>
+      </div>
 
       <div class="flex flex-col gap-y-2">
         <span class="text-sm font-semibold">Steps</span>
@@ -115,18 +156,6 @@ onKeyStroke("Enter", (e) => {
           <span class="text-lg font-semibold">Face restoration</span>
         </h2>
       </div>
-
-      <button
-        class="osmosis primary button mt-4"
-        @click="generate"
-        v-if="!store.txt2imgProgress?.type"
-        :disabled="!store.model || !prompt.length"
-      >
-        Generate
-      </button>
-      <button class="osmosis danger button mt-4" @click="stopGenerate" v-else>
-        Stop
-      </button>
     </div>
 
     <div class="flex items-center w-full h-osmosis-content p-2 bg-surface">

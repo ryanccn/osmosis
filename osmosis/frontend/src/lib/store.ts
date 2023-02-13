@@ -112,18 +112,31 @@ export const useOsmosisStore = defineStore("osmosis", {
       );
     },
 
-    txt2img(
-      prompt: string,
-      negativePrompt: string,
-      steps: number,
-      seed: number,
-      upscale: number | null,
-      faceRestoration: number | null
-    ) {
+    txt2img({
+      prompt,
+      negativePrompt,
+      width,
+      height,
+      steps,
+      seed,
+      upscale,
+      faceRestoration,
+    }: {
+      prompt: string;
+      negativePrompt: string;
+      width: number;
+      height: number;
+      steps: number;
+      seed: number;
+      upscale: number | null;
+      faceRestoration: number | null;
+    }) {
       return new Promise<void>((resolve) => {
         ws.emit("txt2img", {
           prompt,
           negative_prompt: negativePrompt || null,
+          width,
+          height,
           steps,
           seed,
 

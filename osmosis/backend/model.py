@@ -125,7 +125,7 @@ class OsmosisModel:
         width = data.get("width", 512)
         height = data.get("height", 512)
 
-        upscale = data.get("upscale", -1)
+        upscale = data.get("upscale", None)
         face_restoration = data.get("face_restoration", None)
 
         if not prompt:
@@ -220,7 +220,7 @@ class OsmosisModel:
 
             self.check_if_stop()
 
-            if upscale > -1:
+            if upscale:
                 self.esrgan = RealESRGAN()
                 output = self.esrgan.upscale(output, upscale)
                 self.esrgan = None
