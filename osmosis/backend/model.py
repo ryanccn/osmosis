@@ -232,6 +232,8 @@ class OsmosisModel:
                 output = self.gfpgan.restore(output, face_restoration)
                 self.gfpgan = None
 
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
             gc.collect()
 
             metadata = {
