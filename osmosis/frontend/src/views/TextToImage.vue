@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref } from "vue";
 import { useOsmosisStore } from "@/lib/store";
-import { multiplesOf64 } from "@/lib/utils";
+import { multiplesOf64, schedulers } from "@/lib/utils";
 
 import { onKeyStroke } from "@vueuse/core";
 import GalleryView from "@/components/GalleryView.vue";
@@ -16,6 +16,7 @@ const width = ref(512);
 const height = ref(512);
 
 const steps = ref(40);
+const scheduler = ref("LMSDiscrete");
 const seed = ref(0);
 const seedRandom = ref(true);
 
@@ -31,6 +32,7 @@ const generate = () => {
     width: width.value,
     height: height.value,
     steps: steps.value,
+    scheduler: scheduler.value,
     seed: seedRandom.value ? -1 : seed.value,
     upscale: upscale.value ? upscaleScale.value : null,
     faceRestoration: faceRestoration.value ? 0.5 : null,
@@ -81,7 +83,7 @@ onKeyStroke("Enter", (e) => {
         Stop
       </button>
 
-      <div class="flex flex-row gap-x-6">
+      <div class="grid grid-cols-2 gap-x-6 gap-y-5 mb-4">
         <div class="flex flex-col gap-y-2 w-full">
           <h2 class="text-sm font-semibold">Width</h2>
 
@@ -101,19 +103,28 @@ onKeyStroke("Enter", (e) => {
             </option>
           </select>
         </div>
-      </div>
 
-      <div class="flex flex-col gap-y-2">
-        <span class="text-sm font-semibold">Steps</span>
-        <div class="flex flex-row gap-x-3 w-full">
-          <input
-            type="range"
-            min="1"
-            max="100"
-            v-model.number="steps"
-            class="grow"
-          />
-          <span>{{ steps }}</span>
+        <div class="flex flex-col gap-y-2">
+          <span class="text-sm font-semibold">Steps</span>
+          <div
+            class="flex flex-row gap-x-2 items-center w-full align-middle grow"
+          >
+            <input
+              type="range"
+              min="1"
+              max="100"
+              v-model.number="steps"
+              class="grow"
+            />
+            <span class="text-sm">{{ steps }}</span>
+          </div>
+        </div>
+
+        <div class="flex flex-col gap-y-2">
+          <span class="text-sm font-semibold">Scheduler</span>
+          <select class="osmosis form input" v-model="scheduler">
+            <option v-for="s in schedulers" :key="s" :value="s">{{ s }}</option>
+          </select>
         </div>
       </div>
 

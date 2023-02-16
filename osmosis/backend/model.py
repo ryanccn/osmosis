@@ -1,5 +1,6 @@
 from diffusers import StableDiffusionPipeline
 from compel import Compel
+from osmosis.backend.schedulers import schedulers
 from osmosis.backend.restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
@@ -131,6 +132,8 @@ class OsmosisModel:
         seed = data.get("seed", -1)
         width = data.get("width", 512)
         height = data.get("height", 512)
+        scheduler_name = data.get("scheduler", "LMSDiscrete")
+        scheduler = schedulers[scheduler_name]
 
         upscale = data.get("upscale", None)
         face_restoration = data.get("face_restoration", None)
@@ -176,6 +179,11 @@ class OsmosisModel:
 
                     del step_image
 
+                if not isinstance(self.diffusers_model.scheduler, scheduler):
+                    self.diffusers_model.scheduler = scheduler.from_config(
+                        self.diffusers_model.scheduler.config
+                    )
+
                 generator = torch.Generator(
                     device="cuda" if torch.cuda.is_available() else "cpu"
                 ).manual_seed(seed)
@@ -210,6 +218,11 @@ class OsmosisModel:
                     )
                     eventlet.sleep(0)
 
+                if not isinstance(self.coreml_model.scheduler, scheduler):
+                    self.coreml_model.scheduler = scheduler.from_config(
+                        self.coreml_model.scheduler.config
+                    )
+
                 np.random.seed(seed)
 
                 self.check_if_stop()
@@ -223,12 +236,14 @@ class OsmosisModel:
                     callback_steps=1,
                     callback=diffusers_callback,
                 ).images[0]
+
+                np.random.seed(None)
             else:
                 raise NotImplementedError()
 
             self.check_if_stop()
 
-            if upscale > -1 or face_restoration:
+            if upscale or face_restoration:
                 self.sio.emit("txt2img:progress", {"type": "postprocessing"})
                 eventlet.sleep(0)
 

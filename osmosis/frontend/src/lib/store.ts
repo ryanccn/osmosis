@@ -118,6 +118,7 @@ export const useOsmosisStore = defineStore("osmosis", {
       width,
       height,
       steps,
+      scheduler,
       seed,
       upscale,
       faceRestoration,
@@ -127,6 +128,7 @@ export const useOsmosisStore = defineStore("osmosis", {
       width: number;
       height: number;
       steps: number;
+      scheduler: string;
       seed: number;
       upscale: number | null;
       faceRestoration: number | null;
@@ -139,6 +141,7 @@ export const useOsmosisStore = defineStore("osmosis", {
           height,
           steps,
           seed,
+          scheduler,
 
           upscale,
           face_restoration: faceRestoration,

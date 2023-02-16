@@ -12,6 +12,7 @@ An experimental Stable Diffusion web frontend.
 - [x] [Diffusers](https://huggingface.co/docs/diffusers/index) models
 - [x] [CoreML models](https://github.com/apple/ml-stable-diffusion) (macOS)
 - [ ] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models
+- [x] Custom scheduler support
 - [x] Half-precision (`fp16`) support for main models
 - [ ] [Diffusers to CoreML model conversion](https://github.com/apple/ml-stable-diffusion#-converting-models-to-core-ml)
 - [x] [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaling
