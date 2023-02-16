@@ -289,7 +289,7 @@ class OsmosisModel:
                     "hires_fix": False,
                     "type": "txt2img",
                     "postprocessing": [],
-                    "sampler": "k_euler_a",
+                    "sampler": scheduler_name,
                     "variations": [],
                 },
             }
