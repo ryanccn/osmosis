@@ -1,4 +1,5 @@
 from diffusers import StableDiffusionPipeline
+from compel import Compel
 from osmosis.backend.restoration import RealESRGAN, GFPGAN
 
 from flask_socketio import SocketIO
@@ -33,6 +34,7 @@ class OsmosisModel:
 
         self.diffusers_model = None
         self.coreml_model = None
+        self.compel = None
 
         self.sio = sio
 
@@ -47,6 +49,7 @@ class OsmosisModel:
         self.name = None
         self.diffusers_model = None
         self.coreml_model = None
+        self.compel = None
 
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
@@ -63,7 +66,6 @@ class OsmosisModel:
             revision=revision,
             safety_checker=None,
             torch_dtype=torch.float16 if half else torch.float32,
-            custom_pipeline="lpw_stable_diffusion",
         )
 
         if torch.cuda.is_available():
@@ -74,6 +76,11 @@ class OsmosisModel:
             self.diffusers_model.enable_attention_slicing()
 
         self.diffusers_model.to(auto_device())
+
+        self.compel = Compel(
+            tokenizer=self.diffusers_model.tokenizer,
+            text_encoder=self.diffusers_model.text_encoder,
+        )
 
         if system() == "Darwin":
             _ = self.diffusers_model("noop", num_inference_steps=1)
@@ -173,14 +180,21 @@ class OsmosisModel:
                     device="cuda" if torch.cuda.is_available() else "cpu"
                 ).manual_seed(seed)
 
+                prompt_conditioning = self.compel.build_conditioning_tensor(prompt)
+                negative_prompt_conditioning = (
+                    self.compel.build_conditioning_tensor(negative_prompt)
+                    if negative_prompt
+                    else None
+                )
+
                 self.check_if_stop()
 
                 output = self.diffusers_model(
-                    prompt=prompt,
+                    prompt_embeds=prompt_conditioning,
+                    negative_prompt_embeds=negative_prompt_conditioning,
                     width=width,
                     height=height,
                     num_inference_steps=steps,
-                    negative_prompt=negative_prompt,
                     callback_steps=1,
                     callback=diffusers_callback,
                     generator=generator,
