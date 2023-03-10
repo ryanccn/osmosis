@@ -51,6 +51,7 @@ html {
   }
 
   .osmosis.button {
+    @apply flex flex-row items-center gap-x-2;
     @apply px-4 py-2 font-medium text-sm transition text-white rounded disabled:opacity-75;
     @apply focus:outline-none focus:ring focus:ring-accent/50;
   }

@@ -25,7 +25,23 @@ def save_image(image: Image.Image, metadata=None) -> str:
 
     return path
 
-def delete_image(name:str):
+
+def read_image_metadata(name: str):
+    path = os.path.join(Config.OUTPUTS_DIR, name)
+    if not os.path.exists(path):
+        return None
+
+    image = Image.open(path)
+    if image.text and image.text.get("sd-metadata", None):
+        data = json.loads(image.text["sd-metadata"])
+        image.close()
+        return data
+
+    image.close()
+    return None
+
+
+def delete_image(name: str):
     path = os.path.join(Config.OUTPUTS_DIR, name)
     if os.path.exists(path):
         os.remove(path)

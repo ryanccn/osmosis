@@ -1,41 +1,31 @@
 <script setup lang="ts">
-import { ref } from "vue";
+// import { ref } from "vue";
 import { useOsmosisStore } from "@/lib/store";
 import { multiplesOf64, schedulers } from "@/lib/utils";
 
 import { onKeyStroke } from "@vueuse/core";
+
 import GalleryView from "@/components/GalleryView.vue";
+import CurrentImageView from "@/components/CurrentImageView.vue";
 import Switch from "@/components/Switch.vue";
 
 const store = useOsmosisStore();
 
-const prompt = ref("");
-const negativePrompt = ref("");
-
-const width = ref(512);
-const height = ref(512);
-
-const steps = ref(40);
-const scheduler = ref("LMSDiscrete");
-const seed = ref(0);
-const seedRandom = ref(true);
-
-const upscale = ref(false);
-const upscaleScale = ref(2);
-
-const faceRestoration = ref(false);
-
 const generate = () => {
   store.txt2img({
-    prompt: prompt.value,
-    negativePrompt: negativePrompt.value,
-    width: width.value,
-    height: height.value,
-    steps: steps.value,
-    scheduler: scheduler.value,
-    seed: seedRandom.value ? -1 : seed.value,
-    upscale: upscale.value ? upscaleScale.value : null,
-    faceRestoration: faceRestoration.value ? 0.5 : null,
+    prompt: store.txt2imgParameters.prompt,
+    negativePrompt: store.txt2imgParameters.negativePrompt,
+    width: store.txt2imgParameters.width,
+    height: store.txt2imgParameters.height,
+    steps: store.txt2imgParameters.steps,
+    scheduler: store.txt2imgParameters.scheduler,
+    seed: store.txt2imgParameters.seedRandom
+      ? -1
+      : store.txt2imgParameters.seed,
+    upscale: store.txt2imgParameters.upscale
+      ? store.txt2imgParameters.upscaleScale
+      : null,
+    faceRestoration: store.txt2imgParameters.faceRestoration ? 0.5 : null,
   });
 };
 
@@ -60,14 +50,14 @@ onKeyStroke("Enter", (e) => {
         <span class="text-sm font-semibold">Prompt</span>
         <textarea
           class="osmosis form input text-sm min-h-[10rem] resize-none"
-          v-model="prompt"
+          v-model="store.txt2imgParameters.prompt"
         ></textarea>
       </label>
       <label class="flex flex-col gap-y-2">
         <span class="text-sm font-semibold">Negative prompt</span>
         <textarea
           class="osmosis form input text-sm min-h-[5rem] resize-none"
-          v-model="negativePrompt"
+          v-model="store.txt2imgParameters.negativePrompt"
         ></textarea>
       </label>
 
@@ -75,7 +65,7 @@ onKeyStroke("Enter", (e) => {
         class="osmosis primary button my-4"
         @click="generate"
         v-if="!store.txt2imgProgress?.type"
-        :disabled="!store.model || !prompt.length"
+        :disabled="!store.model || !store.txt2imgParameters.prompt.length"
       >
         Generate
       </button>
@@ -87,7 +77,10 @@ onKeyStroke("Enter", (e) => {
         <div class="flex flex-col gap-y-2 w-full">
           <h2 class="text-sm font-semibold">Width</h2>
 
-          <select class="osmosis form input" v-model="width">
+          <select
+            class="osmosis form input"
+            v-model="store.txt2imgParameters.width"
+          >
             <option :key="size" :value="size" v-for="size in multiplesOf64">
               {{ size }}
             </option>
@@ -97,7 +90,10 @@ onKeyStroke("Enter", (e) => {
         <div class="flex flex-col gap-y-2 w-full">
           <h2 class="text-sm font-semibold">Height</h2>
 
-          <select class="osmosis form input" v-model="height">
+          <select
+            class="osmosis form input"
+            v-model="store.txt2imgParameters.height"
+          >
             <option :key="size" :value="size" v-for="size in multiplesOf64">
               {{ size }}
             </option>
@@ -113,16 +109,19 @@ onKeyStroke("Enter", (e) => {
               type="range"
               min="1"
               max="100"
-              v-model.number="steps"
+              v-model.number="store.txt2imgParameters.steps"
               class="grow"
             />
-            <span class="text-sm">{{ steps }}</span>
+            <span class="text-sm">{{ store.txt2imgParameters.steps }}</span>
           </div>
         </div>
 
         <div class="flex flex-col gap-y-2">
           <span class="text-sm font-semibold">Scheduler</span>
-          <select class="osmosis form input" v-model="scheduler">
+          <select
+            class="osmosis form input"
+            v-model="store.txt2imgParameters.scheduler"
+          >
             <option v-for="s in schedulers" :key="s" :value="s">{{ s }}</option>
           </select>
         </div>
@@ -132,7 +131,7 @@ onKeyStroke("Enter", (e) => {
         <div class="flex flex-row items-center justify-between">
           <span class="text-sm font-semibold">Seed</span>
           <label class="flex flex-row gap-x-1 items-center self-end">
-            <Switch v-model="seedRandom" />
+            <Switch v-model="store.txt2imgParameters.seedRandom" />
             <span class="font-medium text-sm">Random</span>
           </label>
         </div>
@@ -140,21 +139,21 @@ onKeyStroke("Enter", (e) => {
           type="number"
           class="osmosis form input"
           min="0"
-          v-model="seed"
-          :disabled="seedRandom"
+          v-model="store.txt2imgParameters.seed"
+          :disabled="store.txt2imgParameters.seedRandom"
         />
       </div>
 
       <div class="flex flex-col gap-y-2">
         <h2 class="flex flex-row items-center gap-x-2">
-          <Switch v-model="upscale" />
+          <Switch v-model="store.txt2imgParameters.upscale" />
           <span class="text-lg font-semibold">Upscale</span>
         </h2>
 
         <select
           class="osmosis form input"
-          v-model.number="upscaleScale"
-          :disabled="!upscale"
+          v-model.number="store.txt2imgParameters.upscaleScale"
+          :disabled="!store.txt2imgParameters.upscale"
         >
           <option value="2">2x</option>
           <option value="4">4x</option>
@@ -163,37 +162,13 @@ onKeyStroke("Enter", (e) => {
 
       <div class="flex flex-col gap-y-2">
         <h2 class="flex flex-row items-center gap-x-2">
-          <Switch v-model="faceRestoration" />
+          <Switch v-model="store.txt2imgParameters.faceRestoration" />
           <span class="text-lg font-semibold">Face restoration</span>
         </h2>
       </div>
     </div>
 
-    <div class="flex flex-col gap-y-6 w-full h-osmosis-content p-10 bg-surface">
-      <div class="flex flex-row gap-x-3 justify-center">
-        <button
-          class="osmosis danger button"
-          @click="store.deleteGalleryImage(store.gallerySelected!)"
-          :disabled="!store.gallerySelected"
-        >
-          Delete
-        </button>
-      </div>
-
-      <div class="relative flex items-center justify-center w-full h-full">
-        <img
-          :src="store.progress.image"
-          class="object-contain w-auto max-w-full max-h-full absolute block rounded-lg"
-          v-if="store.progress.image"
-        />
-        <img
-          :src="`/outputs/${store.gallerySelected}`"
-          class="object-contain w-auto max-w-full max-h-full absolute block rounded-lg"
-          v-else-if="store.gallerySelected"
-        />
-      </div>
-    </div>
-
+    <CurrentImageView />
     <GalleryView />
   </div>
 </template>

@@ -1,4 +1,5 @@
 import { defineStore } from "pinia";
+import type { RawStableDiffusionMetadata } from "./types";
 import { ws } from "./ws";
 
 export const useOsmosisStore = defineStore("osmosis", {
@@ -23,6 +24,24 @@ export const useOsmosisStore = defineStore("osmosis", {
       },
       gallery: [] as string[],
       gallerySelected: null as string | null,
+      gallerySelectedMetadata: null as RawStableDiffusionMetadata | null,
+      txt2imgParameters: {
+        prompt: "",
+        negativePrompt: "",
+
+        width: 512,
+        height: 512,
+
+        steps: 40,
+        scheduler: "LMSDiscrete",
+        seed: 0,
+        seedRandom: true,
+
+        upscale: false as false,
+        upscaleScale: 2,
+
+        faceRestoration: false,
+      },
     };
   },
 
@@ -105,10 +124,27 @@ export const useOsmosisStore = defineStore("osmosis", {
           store.coreMLAvailable = coreml_available;
 
           await store.refreshGallery();
-          if (!store.gallerySelected) store.gallerySelected = store.gallery[0];
+          if (!store.gallerySelected) {
+            store.gallerySelected = store.gallery[0];
+            store.gallerySelectedMetadata = await this.getImageMetadata(
+              store.gallerySelected
+            );
+          }
 
           store.connected = true;
         }
+      );
+    },
+
+    getImageMetadata(name: string) {
+      return new Promise<RawStableDiffusionMetadata>((resolve) =>
+        ws.emit(
+          "gallery:metadata",
+          name,
+          (data: RawStableDiffusionMetadata) => {
+            resolve(data);
+          }
+        )
       );
     },
 
