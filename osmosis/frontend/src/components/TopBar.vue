@@ -33,7 +33,7 @@ const loadModelIsOpen = ref(false);
       class="bg-surface hover:bg-surface-hover transition px-4 py-2 font-medium text-sm rounded focus:outline-none focus:ring focus:ring-accent/50"
       @click="loadModelIsOpen = true"
     >
-      {{ store.model?.name ?? "No model loaded" }}
+      {{ store.model ? store.model.name : "No model loaded" }}
     </button>
   </div>
 

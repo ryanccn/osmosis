@@ -6,12 +6,6 @@ const store = useOsmosisStore();
 
 <template>
   <div class="flex flex-col gap-y-2 p-4 h-osmosis-content">
-    <div class="flex gap-x-2 items-center p-4">
-      <!-- <button class="bg-red-500 text-white osmosis danger button">
-        Delete
-      </button> -->
-    </div>
-
     <div class="grid grid-cols-3 gap-4 p-4 overflow-y-scroll">
       <button
         v-for="name in store.gallery"

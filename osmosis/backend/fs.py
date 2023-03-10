@@ -25,6 +25,11 @@ def save_image(image: Image.Image, metadata=None) -> str:
 
     return path
 
+def delete_image(name:str):
+    path = os.path.join(Config.OUTPUTS_DIR, name)
+    if os.path.exists(path):
+        os.remove(path)
+
 
 MODELS_CONFIG_PATH = os.path.join(Config.DATA_DIR, "models.json")
 

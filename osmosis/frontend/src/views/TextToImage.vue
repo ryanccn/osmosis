@@ -169,19 +169,29 @@ onKeyStroke("Enter", (e) => {
       </div>
     </div>
 
-    <div class="flex items-center w-full h-osmosis-content p-2 bg-surface">
-      <div class="flex flex-row gap-x-3"></div>
+    <div class="flex flex-col gap-y-6 w-full h-osmosis-content p-10 bg-surface">
+      <div class="flex flex-row gap-x-3 justify-center">
+        <button
+          class="osmosis danger button"
+          @click="store.deleteGalleryImage(store.gallerySelected!)"
+          :disabled="!store.gallerySelected"
+        >
+          Delete
+        </button>
+      </div>
 
-      <img
-        :src="store.progress.image"
-        class="block rounded-lg object-contain max-w-full max-h-full mx-auto"
-        v-if="store.progress.image"
-      />
-      <img
-        :src="`/outputs/${store.gallerySelected}`"
-        class="block rounded-lg object-contain max-w-full max-h-full mx-auto"
-        v-else-if="store.gallerySelected"
-      />
+      <div class="relative flex items-center justify-center w-full h-full">
+        <img
+          :src="store.progress.image"
+          class="object-contain w-auto max-w-full max-h-full absolute block rounded-lg"
+          v-if="store.progress.image"
+        />
+        <img
+          :src="`/outputs/${store.gallerySelected}`"
+          class="object-contain w-auto max-w-full max-h-full absolute block rounded-lg"
+          v-else-if="store.gallerySelected"
+        />
+      </div>
     </div>
 
     <GalleryView />

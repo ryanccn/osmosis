@@ -161,6 +161,16 @@ export const useOsmosisStore = defineStore("osmosis", {
       });
     },
 
+    deleteGalleryImage(name: string) {
+      return new Promise<void>((resolve) =>
+        ws.emit("gallery:delete", name, () => {
+          this.refreshGallery();
+          this.gallerySelected = this.gallery[0];
+          resolve();
+        })
+      );
+    },
+
     refreshGallery() {
       return new Promise<void>((resolve) => {
         ws.emit("gallery", ({ files }: { files: string[] }) => {

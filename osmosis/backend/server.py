@@ -6,7 +6,7 @@ from osmosis.frontend import dist as frontend
 
 from osmosis.backend.model import OsmosisModel
 from osmosis.backend.config import Config
-from osmosis.backend.fs import save_image, load_models, save_models
+from osmosis.backend.fs import save_image, delete_image, load_models, save_models
 
 from rich import print
 
@@ -139,9 +139,11 @@ class OsmosisServer:
 
             return {"files": files}
 
+        @self.sio.on("gallery:delete")
+        def gallery_delete(name: str):
+            delete_image(name)
+
     def start(self):
-        print(
-            f"[bold]Osmosis[/bold] started on [blue]http://localhost:{self.port}/[/blue]"
-        )
+        print(f"Osmosis started on [blue]http://localhost:{self.port}/[/blue]")
 
         self.sio.run(self.app, port=self.port, debug=os.environ.get("DEBUG") == "1")
