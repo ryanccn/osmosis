@@ -191,7 +191,7 @@ export const useOsmosisStore = defineStore("osmosis", {
           this.progress.task = "";
           this.progress.image = null;
           await this.refreshGallery();
-          this.gallerySelected = this.gallery[0];
+          await this.setGallerySelected(this.gallery[0]);
           resolve();
         });
       });
@@ -199,18 +199,32 @@ export const useOsmosisStore = defineStore("osmosis", {
 
     deleteGalleryImage(name: string) {
       return new Promise<void>((resolve) =>
-        ws.emit("gallery:delete", name, () => {
+        ws.emit("gallery:delete", name, async () => {
           this.refreshGallery();
-          this.gallerySelected = this.gallery[0];
+          await this.setGallerySelected(this.gallery[0]);
           resolve();
         })
       );
     },
 
+    async setGallerySelected(name: string) {
+      if (!this.gallery.includes(name)) return;
+      this.gallerySelected = name;
+      this.gallerySelectedMetadata = await this.getImageMetadata(
+        this.gallerySelected
+      );
+    },
+
     refreshGallery() {
       return new Promise<void>((resolve) => {
-        ws.emit("gallery", ({ files }: { files: string[] }) => {
+        ws.emit("gallery", async ({ files }: { files: string[] }) => {
           this.gallery = files;
+          if (
+            !this.gallerySelected ||
+            !this.gallery.includes(this.gallerySelected)
+          ) {
+            await this.setGallerySelected(this.gallery[0]);
+          }
           resolve();
         });
       });

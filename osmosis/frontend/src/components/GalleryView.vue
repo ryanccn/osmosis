@@ -2,6 +2,10 @@
 import { useOsmosisStore } from "@/lib/store";
 
 const store = useOsmosisStore();
+
+const setNewGallerySelected = async (name: string) => {
+  store.setGallerySelected(name);
+};
 </script>
 
 <template>
@@ -10,7 +14,7 @@ const store = useOsmosisStore();
       <button
         v-for="name in store.gallery"
         :key="name"
-        @click="store.gallerySelected = name"
+        @click="setNewGallerySelected(name)"
       >
         <img
           :src="`/outputs/${name}`"
