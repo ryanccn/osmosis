@@ -11,5 +11,9 @@ export const schedulers = [
   "LMSDiscrete",
   "EulerDiscrete",
   "EulerAncestralDiscrete",
+  "DPMSolverSinglestep",
   "DPMSolverMultistep",
+  "KDPM2Discrete",
+  "KDPM2AncestralDiscrete",
+  "UniPCMultistep",
 ];
