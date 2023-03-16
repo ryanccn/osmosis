@@ -11,19 +11,20 @@ An experimental Stable Diffusion web frontend.
 
 - [x] [Diffusers](https://huggingface.co/docs/diffusers/index) models
 - [x] [CoreML models](https://github.com/apple/ml-stable-diffusion) (macOS)
-- [ ] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models
 - [x] Custom scheduler support
 - [x] Half-precision (`fp16`) support for main models
 - [ ] [Diffusers to CoreML model conversion](https://github.com/apple/ml-stable-diffusion#-converting-models-to-core-ml)
 - [x] [Real-ESRGAN](https://github.com/xinntao/Real-ESRGAN) upscaling
 - [x] [GFPGAN](https://github.com/TencentARC/GFPGAN) face restoration
 - [x] Structured metadata according to https://github.com/invoke-ai/InvokeAI/issues/266
-- [ ] Gallery view
+- [x] Gallery view
 - [ ] [Image to image](https://huggingface.co/docs/diffusers/using-diffusers/img2img)
 - [ ] [Inpainting](https://huggingface.co/docs/diffusers/using-diffusers/inpaint) / outpainting
 - [ ] Training with [LoRA](https://huggingface.co/docs/diffusers/training/lora) / [Textual Inversion](https://huggingface.co/docs/diffusers/training/text_inversion) / [Dreambooth](https://huggingface.co/docs/diffusers/training/dreambooth)
 - [x] [xFormers](https://github.com/facebookresearch/xformers) optimization
 - [x] [Apple Silicon](https://huggingface.co/docs/diffusers/optimization/mps) optimization
+- [x] [PyTorch 2.0](https://huggingface.co/docs/diffusers/optimization/torch2.0) optimization
+- [ ] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models (_not planned_)
 
 ## System Requirements
 
