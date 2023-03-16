@@ -28,10 +28,23 @@ fix_torch_funcs_mps()
     is_flag=True,
     help="Show in-progress images during generation",
 )
-def main(port: int = 26538, data_dir: str | None = None, show_step_latents=False):
+@click.option(
+    "--experimental-torch-compile",
+    is_flag=True,
+    help="Use Pytorch 2.0 compilation optimization",
+)
+def main(
+    port: int = 26538,
+    data_dir: str | None = None,
+    show_step_latents=False,
+    experimental_torch_compile=False,
+):
     """Osmosis is an experimental Stable Diffusion web frontend."""
     Config.DATA_DIR = data_dir or Config.DATA_DIR
     Config.SHOW_STEP_LATENTS = show_step_latents or Config.SHOW_STEP_LATENTS
+    Config.EXPERIMENTAL_TORCH_COMPILE = (
+        experimental_torch_compile or Config.EXPERIMENTAL_TORCH_COMPILE
+    )
 
     server = OsmosisServer(port=port)
     server.start()

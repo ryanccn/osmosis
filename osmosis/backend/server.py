@@ -35,7 +35,10 @@ class OsmosisServer:
 
         self.model = OsmosisModel(sio=self.sio)
 
-        diffusers.logging.set_verbosity_warning()
+        if not Config.DEBUG:
+            diffusers.logging.set_verbosity_error()
+        else:
+            diffusers.logging.set_verbosity_info()
 
         self.register_routes()
         self.register_ws_handlers()
@@ -156,4 +159,4 @@ class OsmosisServer:
     def start(self):
         print(f"Osmosis started on [blue]http://localhost:{self.port}/[/blue]")
 
-        self.sio.run(self.app, port=self.port, debug=os.environ.get("DEBUG") == "1")
+        self.sio.run(self.app, port=self.port, debug=Config.DEBUG)

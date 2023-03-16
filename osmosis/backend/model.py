@@ -69,9 +69,18 @@ class OsmosisModel:
             torch_dtype=torch.float16 if half else torch.float32,
         )
 
+        if Config.EXPERIMENTAL_TORCH_COMPILE:
+            if torch.cuda.is_available():
+                self.diffusers_model.unet = torch.compile(self.diffusers_model.unet)
+            else:
+                print(
+                    "[yellow]torch.compile() does not work without CUDA, skipping step[/yellow]",
+                    file=sys.stderr,
+                )
+
         if torch.cuda.is_available():
             self.diffusers_model.enable_sequential_cpu_offload()
-        if is_xformers_available():
+        if is_xformers_available() and not Config.EXPERIMENTAL_TORCH_COMPILE:
             self.diffusers_model.enable_xformers_memory_efficient_attention()
         else:
             self.diffusers_model.enable_attention_slicing()

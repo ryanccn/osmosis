@@ -13,3 +13,6 @@ class Config:
     GFPGAN_MODELS_DIR = ensure_exists(os.path.join(DATA_DIR, "gfpgan"))
 
     SHOW_STEP_LATENTS = False
+    EXPERIMENTAL_TORCH_COMPILE = False
+
+    DEBUG = True if os.environ.get("DEBUG", None) == "1" else False
