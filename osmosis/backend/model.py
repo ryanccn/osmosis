@@ -281,12 +281,7 @@ class OsmosisModel:
                 "app_id": "ryanccn/osmosis",
                 "app_version": __version__,
                 "image": {
-                    "prompt": [
-                        {
-                            "prompt": prompt,
-                            "weight": 1.0,
-                        }
-                    ],
+                    "prompt": prompt,
                     "steps": steps,
                     "cfg_scale": 7.5,
                     "threshold": 0,
