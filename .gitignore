@@ -24,3 +24,6 @@ MANIFEST
 .venv/
 .vscode/
 .idea/
+.direnv/
+.pre-commit-config.yaml
+result
