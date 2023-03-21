@@ -1,6 +1,6 @@
 [build-system]
-requires = ["setuptools"]
-build-backend = "setuptools.build_meta"
+requires = ["flit_core >=3.2,<4"]
+build-backend = "flit_core.buildapi"
 
 [project]
 name = "osmosis"
@@ -63,12 +63,5 @@ osmosis = "osmosis.cli:main"
   "triton; sys_platform=='linux'",
 ]
 
-[tool.setuptools.dynamic]
-version = { attr = "osmosis.__version__" }
-
-[tool.setuptools.packages.find]
-"where" = ["."]
-"include" = ["osmosis*"]
-
-[tool.setuptools.package-data]
-"osmosis.frontend.dist" = ["**"]
+[tool.flit.external-data]
+directory = "osmosis/frontend/dist"
