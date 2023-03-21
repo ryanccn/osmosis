@@ -1,7 +1,8 @@
 {
   lib,
-  #stdenv, this is for future darwin support
+  stdenv,
   aipython3,
+  coremltools,
   fetchFromGitHub,
   fetchPypi,
   osmosis-frontend,
@@ -57,24 +58,28 @@ in
     format = "flit";
     src = cleanSource ./..;
 
-    propagatedBuildInputs = with aipython3; [
-      accelerate
-      click
-      compel
-      # TODO: install this for darwin
-      #coremltools
-      diffusers
-      eventlet
-      flask
-      flask-socketio
-      flit-core
-      gfpgan
-      realesrgan
-      rich
-      torch
-      transformers
-      tqdm
-    ];
+    propagatedBuildInputs = with aipython3;
+      [
+        accelerate
+        click
+        compel
+        diffusers
+        eventlet
+        flask
+        flask-socketio
+        flit-core
+        gfpgan
+        realesrgan
+        rich
+        torch
+        transformers
+        tqdm
+      ]
+      ++ (
+        if stdenv.isDarwin
+        then [coremltools]
+        else []
+      );
 
     # possible TODO: there might be a
     # better way to do this...

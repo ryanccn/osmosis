@@ -12,14 +12,15 @@
   mkOsmosis = args: callPackage ./osmosis.nix ({inherit version;} // args);
 in {
   packages = rec {
+    coremltools = callPackage ./coremltools.nix {};
     osmosis-frontend = callPackage ./osmosis-frontend.nix {};
     osmosis-nvidia = mkOsmosis {
       aipython3 = aipython3-nvidia;
-      inherit osmosis-frontend;
+      inherit osmosis-frontend coremltools;
     };
     osmosis-amd = mkOsmosis {
       aipython3 = aipython3-amd;
-      inherit osmosis-frontend;
+      inherit osmosis-frontend coremltools;
     };
   };
 }
