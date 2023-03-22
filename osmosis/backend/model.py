@@ -89,6 +89,8 @@ class OsmosisModel:
         if vae is not None:
             print("[yellow]Custom VAE is not yet supported![/yellow]")
 
+        self.diffusers_model.safety_checker = None
+
         self._set_diffusers_options()
 
     def _set_diffusers_options(self):
