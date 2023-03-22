@@ -16,11 +16,11 @@ from diffusers.utils.import_utils import is_xformers_available
 
 import eventlet
 from threading import Event
-from platform import system
 import random
 from rich import print
 
 import psutil
+import platform
 import os
 import sys
 import gc
@@ -92,6 +92,8 @@ class OsmosisModel:
         self._set_diffusers_options()
 
     def _set_diffusers_options(self):
+        low_vram = psutil.virtual_memory().total <= 16 * (2**30)
+
         if Config.EXPERIMENTAL_TORCH_COMPILE:
             if torch.cuda.is_available():
                 self.diffusers_model.unet = torch.compile(self.diffusers_model.unet)
@@ -115,21 +117,22 @@ class OsmosisModel:
 
         if is_xformers_available() and not Config.EXPERIMENTAL_TORCH_COMPILE:
             self.diffusers_model.enable_xformers_memory_efficient_attention()
-        else:
+        elif low_vram:
             self.diffusers_model.enable_attention_slicing()
 
-        self.diffusers_model.enable_vae_tiling()
+        if low_vram:
+            self.diffusers_model.enable_vae_tiling()
 
         self.compel = Compel(
             tokenizer=self.diffusers_model.tokenizer,
             text_encoder=self.diffusers_model.text_encoder,
         )
 
-        if system() == "Darwin":
+        if platform.system() == "Darwin":
             _ = self.diffusers_model("noop", num_inference_steps=1)
 
     def load_coreml(self, model_id, mlpackages_dir, scheduler=None):
-        if system() != "Darwin":
+        if platform.system() != "Darwin":
             raise NotImplementedError()
 
         from osmosis.backend.coreml.pipeline import (
