@@ -148,39 +148,23 @@ export const useOsmosisStore = defineStore("osmosis", {
       );
     },
 
-    txt2img({
-      prompt,
-      negativePrompt,
-      width,
-      height,
-      steps,
-      scheduler,
-      seed,
-      upscale,
-      faceRestoration,
-    }: {
-      prompt: string;
-      negativePrompt: string;
-      width: number;
-      height: number;
-      steps: number;
-      scheduler: string;
-      seed: number;
-      upscale: number | null;
-      faceRestoration: number | null;
-    }) {
+    txt2img() {
       return new Promise<void>((resolve) => {
         ws.emit("txt2img", {
-          prompt,
-          negative_prompt: negativePrompt || null,
-          width,
-          height,
-          steps,
-          seed,
-          scheduler,
+          prompt: this.txt2imgParameters.prompt,
+          negative_prompt: this.txt2imgParameters.negativePrompt || null,
+          width: this.txt2imgParameters.width,
+          height: this.txt2imgParameters.height,
+          steps: this.txt2imgParameters.steps,
+          seed: this.txt2imgParameters.seedRandom
+            ? -1
+            : this.txt2imgParameters.seed,
+          scheduler: this.txt2imgParameters.scheduler,
 
-          upscale,
-          face_restoration: faceRestoration,
+          upscale: this.txt2imgParameters.upscale
+            ? this.txt2imgParameters.upscaleScale
+            : null,
+          face_restoration: this.txt2imgParameters.faceRestoration,
         });
 
         this.progress.type = "indeterminate";

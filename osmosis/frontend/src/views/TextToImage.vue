@@ -12,21 +12,7 @@ import Switch from "@/components/Switch.vue";
 const store = useOsmosisStore();
 
 const generate = () => {
-  store.txt2img({
-    prompt: store.txt2imgParameters.prompt,
-    negativePrompt: store.txt2imgParameters.negativePrompt,
-    width: store.txt2imgParameters.width,
-    height: store.txt2imgParameters.height,
-    steps: store.txt2imgParameters.steps,
-    scheduler: store.txt2imgParameters.scheduler,
-    seed: store.txt2imgParameters.seedRandom
-      ? -1
-      : store.txt2imgParameters.seed,
-    upscale: store.txt2imgParameters.upscale
-      ? store.txt2imgParameters.upscaleScale
-      : null,
-    faceRestoration: store.txt2imgParameters.faceRestoration ? 0.5 : null,
-  });
+  store.txt2img();
 };
 
 const stopGenerate = () => {
@@ -122,7 +108,9 @@ onKeyStroke("Enter", (e) => {
             class="osmosis form input"
             v-model="store.txt2imgParameters.scheduler"
           >
-            <option v-for="s in schedulers" :key="s" :value="s">{{ s }}</option>
+            <option v-for="(value, key) in schedulers" :key="key" :value="key">
+              {{ value }}
+            </option>
           </select>
         </div>
       </div>

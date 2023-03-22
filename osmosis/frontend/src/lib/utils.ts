@@ -4,16 +4,16 @@ export const multiplesOf64 = [
   1856, 1920, 1984, 2048,
 ];
 
-export const schedulers = [
-  "DDIM",
-  "PNDM",
-  "DDPM",
-  "LMSDiscrete",
-  "EulerDiscrete",
-  "EulerAncestralDiscrete",
-  "DPMSolverSinglestep",
-  "DPMSolverMultistep",
-  "KDPM2Discrete",
-  "KDPM2AncestralDiscrete",
-  "UniPCMultistep",
-];
+export const schedulers = {
+  DDIM: "DDIM",
+  DDPM: "DDPM",
+  PNDM: "PNDM",
+  LMSDiscrete: "LMS Discrete",
+  EulerDiscrete: "Euler Discrete",
+  EulerAncestralDiscrete: "Euler Ancestral Discrete",
+  DPMSolverSinglestep: "DPM Solver Singlestep",
+  DPMSolverMultistep: "DPM Solver Multistep",
+  KDPM2Discrete: "DPM2 Discrete (Karras)",
+  KDPM2AncestralDiscrete: "DPM2 Ancestral Discrete (Karras)",
+  UniPCMultistep: "UniPC",
+};
