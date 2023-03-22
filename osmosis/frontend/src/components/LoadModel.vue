@@ -130,7 +130,7 @@ const addCoreMLModel = () => {
                   :key="model[0]"
                 >
                   <p class="text-lg font-bold">
-                    {{ model[1].id
+                    {{ model[1].displayName ?? model[1].id
                     }}<span class="text-gray-400" v-if="model[1].revision"
                       >#{{ model[1].revision }}</span
                     >

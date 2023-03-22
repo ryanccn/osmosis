@@ -57,7 +57,11 @@ def load_models():
 
             for internal_id in data:
                 if os.path.exists(data[internal_id]["id"]):
-                    data[internal_id]["id"] = os.path.basename(data[internal_id]["id"])
+                    data[internal_id]["displayName"] = os.path.basename(
+                        data[internal_id]["id"]
+                    )
+                else:
+                    data[internal_id]["displayName"] = data[internal_id]["id"]
 
             return data
 

@@ -11,6 +11,7 @@ export const useOsmosisStore = defineStore("osmosis", {
         [internalId: string]: {
           type: "diffusers" | "coreml";
           id: string;
+          displayName?: string;
           revision?: string;
           half?: boolean;
         };
@@ -109,7 +110,13 @@ export const useOsmosisStore = defineStore("osmosis", {
             coreml_available,
           }: {
             model: { type: "diffusers" | "coreml"; name: string };
-            models: any;
+            models: {
+              [internalId: string]: {
+                type: "diffusers" | "coreml";
+                id: string;
+                displayName: string;
+              };
+            };
             coreml_available: boolean;
           }) => {
             this.model =
