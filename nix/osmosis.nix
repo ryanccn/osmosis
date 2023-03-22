@@ -8,6 +8,7 @@
   osmosis-frontend,
   python3Packages,
   version,
+  isNvidia ? false,
   ...
 }: let
   inherit (lib) cleanSource licenses maintainers;
@@ -50,6 +51,44 @@
       redis
     ];
   });
+
+  pyre-extensions = buildPythonPackage rec {
+    pname = "pyre-extensions";
+    version = "0.0.23";
+    format = "wheel";
+    src = fetchPypi rec {
+      pname = "pyre_extensions";
+      inherit version format;
+      sha256 = "sha256-6UX99BExcs7FF8Xa7KVvYfZjL9W42BZfElPIhlyH5is=";
+      dist = python;
+      python = "py3";
+    };
+
+    propagatedBuildInputs = with aipython3; [
+      typing-extensions
+      typing-inspect
+    ];
+  };
+
+  # allows for cuda support
+  xformers = buildPythonPackage rec {
+    pname = "xformers";
+    version = "0.0.16";
+    format = "wheel";
+
+    src = builtins.fetchurl {
+      url = "https://files.pythonhosted.org/packages/b3/90/178f8dec2d3f9b60f4d29954bc2d605ee8e8e762094047fc4ec0b94d13c0/xformers-0.0.16-cp310-cp310-manylinux2014_x86_64.whl";
+      sha256 = "sha256:03kgf90zz3kfz05zx9sm0cr5xwzlgp6qhr4qyfz9ddjq69k7fjm6";
+    };
+
+    propagatedBuildInputs = with aipython3; [
+      torch
+      numpy
+      pyre-extensions
+    ];
+
+    doCheck = false;
+  };
 in
   buildPythonPackage {
     pname = "osmosis";
@@ -75,6 +114,11 @@ in
         transformers
         tqdm
       ]
+      ++ (
+        if isNvidia
+        then [xformers]
+        else []
+      )
       ++ (
         if stdenv.isDarwin
         then [coremltools]

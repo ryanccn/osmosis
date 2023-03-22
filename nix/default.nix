@@ -16,6 +16,7 @@ in {
     osmosis-frontend = callPackage ./osmosis-frontend.nix {};
     osmosis-nvidia = mkOsmosis {
       aipython3 = aipython3-nvidia;
+      isNvidia = true;
       inherit osmosis-frontend coremltools;
     };
     osmosis-amd = mkOsmosis {
