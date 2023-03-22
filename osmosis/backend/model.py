@@ -211,11 +211,9 @@ class OsmosisModel:
                     device="cuda" if torch.cuda.is_available() else "cpu"
                 ).manual_seed(seed)
 
-                prompt_conditioning = self.compel.build_conditioning_tensor(prompt)
+                prompt_conditioning = self.compel(prompt)
                 negative_prompt_conditioning = (
-                    self.compel.build_conditioning_tensor(negative_prompt)
-                    if negative_prompt
-                    else None
+                    self.compel(negative_prompt) if negative_prompt else None
                 )
 
                 self.check_if_stop()
