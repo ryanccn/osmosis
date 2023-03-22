@@ -14,7 +14,15 @@
   inherit (aipython3) buildPythonPackage;
 
   # for some reason this doesn't build by default...
-  compel = aipython3.compel.overridePythonAttrs (_: {
+  compel = aipython3.compel.overridePythonAttrs (_: rec {
+    pname = "compel";
+    version = "1.0.2";
+
+    src = fetchPypi {
+      inherit pname version;
+      sha256 = "sha256-4yqJsrsGiquLI+xc+vGOSF4K+st6xM4C8FbEVT2GIbk=";
+    };
+
     propagatedBuildInputs = with aipython3; [
       setuptools
       diffusers
