@@ -29,6 +29,11 @@ fix_torch_funcs_mps()
     help="Show in-progress images during generation",
 )
 @click.option(
+    "--safety-checker",
+    is_flag=True,
+    help="Turn on the safety checker (filtered images will be black, will increase VRAM usage)",
+)
+@click.option(
     "--model-cpu-offload",
     is_flag=True,
     help="Offloads all models to CPU using accelerate, reducing memory usage with a low impact on performance",
@@ -47,6 +52,7 @@ def main(
     port: int = 26538,
     data_dir: str | None = None,
     show_step_latents=None,
+    safety_checker=None,
     model_cpu_offload=None,
     sequential_cpu_offload=None,
     experimental_torch_compile=None,
@@ -62,6 +68,8 @@ def main(
         Config.MODEL_CPU_OFFLOAD = model_cpu_offload
     if sequential_cpu_offload is not None:
         Config.SEQUENTIAL_CPU_OFFLOAD = sequential_cpu_offload
+    if safety_checker is not None:
+        Config.SAFETY_CHECKER = safety_checker
 
     server = OsmosisServer(port=port)
     server.start()

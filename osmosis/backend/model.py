@@ -66,11 +66,15 @@ class OsmosisModel:
             model_id if not os.path.exists(model_id) else os.path.basename(model_id)
         )
 
+        safety_checker_extra_args = (
+            {} if Config.SAFETY_CHECKER else {"safety_checker": None}
+        )
+
         self.diffusers_model = StableDiffusionPipeline.from_pretrained(
             model_id,
             revision=revision,
-            safety_checker=None,
             torch_dtype=torch.float16 if half else torch.float32,
+            **safety_checker_extra_args,
         )
         self._set_diffusers_options()
 
@@ -89,7 +93,8 @@ class OsmosisModel:
         if vae is not None:
             print("[yellow]Custom VAE is not yet supported![/yellow]")
 
-        self.diffusers_model.safety_checker = None
+        if not Config.SAFETY_CHECKER:
+            self.diffusers_model.safety_checker = None
 
         self._set_diffusers_options()
 

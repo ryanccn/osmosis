@@ -13,6 +13,7 @@ class Config:
     GFPGAN_MODELS_DIR = ensure_exists(os.path.join(DATA_DIR, "gfpgan"))
 
     SHOW_STEP_LATENTS = False
+    SAFETY_CHECKER = False
     EXPERIMENTAL_TORCH_COMPILE = False
 
     MODEL_CPU_OFFLOAD = False
