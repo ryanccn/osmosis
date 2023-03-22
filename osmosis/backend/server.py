@@ -154,6 +154,8 @@ class OsmosisServer:
 
         @self.sio.on("gallery:metadata")
         def gallery_metadata(name: str):
+            if name == None:
+                return None
             return read_image_metadata(name)
 
     def start(self):
