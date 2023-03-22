@@ -5,10 +5,7 @@ export interface RawStableDiffusionMetadata {
   app_id?: string | null;
   app_version?: string | null;
   image: {
-    prompt: {
-      prompt: string;
-      weight: number;
-    }[];
+    prompt: string;
     steps: number;
     cfg_scale: number;
     threshold?: number;

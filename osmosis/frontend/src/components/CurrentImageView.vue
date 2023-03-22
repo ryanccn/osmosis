@@ -10,8 +10,7 @@ const showingMetadata = ref(false);
 const copyParameters = () => {
   if (!store.gallerySelectedMetadata) return;
 
-  store.txt2imgParameters.prompt =
-    store.gallerySelectedMetadata.image.prompt[0].prompt;
+  store.txt2imgParameters.prompt = store.gallerySelectedMetadata.image.prompt;
   store.txt2imgParameters.width = store.gallerySelectedMetadata.image.width;
   store.txt2imgParameters.height = store.gallerySelectedMetadata.image.height;
   store.txt2imgParameters.scheduler =
@@ -73,7 +72,7 @@ const copyParameters = () => {
         </p>
         <p>
           <span class="font-semibold">Prompt:</span>
-          {{ store.gallerySelectedMetadata.image.prompt[0].prompt }}
+          {{ store.gallerySelectedMetadata.image.prompt }}
         </p>
         <p>
           <span class="font-semibold">Width:</span>
