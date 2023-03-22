@@ -84,7 +84,11 @@ class OsmosisServer:
                     half=model.get("half", False),
                 )
             elif model["type"] == "coreml":
-                self.model.load_coreml(model["id"], model["mlpackages"])
+                self.model.load_coreml(model["path"], model["mlpackages"])
+            elif model["type"] == "checkpoint":
+                self.model.load_checkpoint(model["path"], half=model.get("half", False))
+            else:
+                raise NotImplementedError()
 
             print(f"[green]Loaded model {model_internal_id}[/green]")
 
@@ -117,8 +121,19 @@ class OsmosisServer:
                 prev_models = load_models()
                 prev_models[new_internal_id] = {
                     "type": "coreml",
-                    "id": model_id,
+                    "path": model_id,
                     "mlpackages": mlpackages_dir,
+                }
+                save_models(prev_models)
+            elif model_type == "checkpoint":
+                path = data["path"]
+                half = data.get("half", False)
+
+                prev_models = load_models()
+                prev_models[new_internal_id] = {
+                    "type": "checkpoint",
+                    "path": path,
+                    "half": half,
                 }
                 save_models(prev_models)
             else:

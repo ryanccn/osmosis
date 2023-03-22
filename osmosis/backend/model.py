@@ -47,7 +47,7 @@ class OsmosisModel:
         def stop():
             self.stop_requested.set()
 
-    def unload_model(self):
+    def _unload_model(self):
         self.type = None
         self.name = None
         self.diffusers_model = None
@@ -59,7 +59,7 @@ class OsmosisModel:
         gc.collect()
 
     def load_diffusers(self, model_id: str, revision="main", half=False):
-        self.unload_model()
+        self._unload_model()
 
         self.type = "diffusers"
         self.name = (
@@ -72,7 +72,26 @@ class OsmosisModel:
             safety_checker=None,
             torch_dtype=torch.float16 if half else torch.float32,
         )
+        self._set_diffusers_options()
 
+    def load_checkpoint(self, path: str, vae: str | None = None, half=False):
+        self._unload_model()
+        self.type = "diffusers"
+        self.name = os.path.basename(path)
+
+        from diffusers.pipelines.stable_diffusion.convert_from_ckpt import (
+            load_pipeline_from_original_stable_diffusion_ckpt,
+        )
+
+        self.diffusers_model = load_pipeline_from_original_stable_diffusion_ckpt(
+            path, from_safetensors=path.endswith(".safetensors")
+        )
+        if vae is not None:
+            print("[yellow]Custom VAE is not yet supported![/yellow]")
+
+        self._set_diffusers_options()
+
+    def _set_diffusers_options(self):
         if Config.EXPERIMENTAL_TORCH_COMPILE:
             if torch.cuda.is_available():
                 self.diffusers_model.unet = torch.compile(self.diffusers_model.unet)
@@ -118,7 +137,7 @@ class OsmosisModel:
             get_coreml_pipe,
         )
 
-        self.unload_model()
+        self._unload_model()
 
         self.type = "coreml"
         self.name = model_id

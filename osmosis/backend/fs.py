@@ -56,12 +56,17 @@ def load_models():
             data = json.load(f)
 
             for internal_id in data:
-                if os.path.exists(data[internal_id]["id"]):
-                    data[internal_id]["displayName"] = os.path.basename(
-                        data[internal_id]["id"]
-                    )
+                data_id = data[internal_id].get("id", None)
+                data_path = data[internal_id].get("path", None)
+
+                if data_id and os.path.exists(data_id) is not None:
+                    data[internal_id]["displayName"] = os.path.basename(data_id)
+                elif data_path and os.path.exists(data_path) is not None:
+                    data[internal_id]["displayName"] = os.path.basename(data_path)
                 else:
-                    data[internal_id]["displayName"] = data[internal_id]["id"]
+                    data[internal_id]["displayName"] = data[internal_id].get(
+                        "id", data[internal_id].get("path", None)
+                    )
 
             return data
 

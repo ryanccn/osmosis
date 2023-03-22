@@ -35,6 +35,7 @@ const mlpackagesDir = ref("");
 const modelTypeToReadable = (str: string) => {
   if (str === "diffusers") return "Diffusers";
   else if (str === "coreml") return "CoreML";
+  else if (str === "checkpoint") return "Checkpoint";
   return "Unknown";
 };
 
@@ -59,13 +60,27 @@ const addDiffusersModel = () => {
     });
 };
 
+const addCheckpointModel = () => {
+  if (!diffusersModelId.value || !mlpackagesDir.value) return;
+
+  store
+    .addModel({
+      type: "checkpoint",
+      path: diffusersModelId.value,
+      half: diffusersHalf.value,
+    })
+    .then(() => {
+      tab.value = Tabs.INDEX;
+    });
+};
+
 const addCoreMLModel = () => {
   if (!diffusersModelId.value || !mlpackagesDir.value) return;
 
   store
     .addModel({
       type: "coreml",
-      id: diffusersModelId.value,
+      path: diffusersModelId.value,
       mlpackages: mlpackagesDir.value,
     })
     .then(() => {
@@ -152,7 +167,7 @@ const addCoreMLModel = () => {
                 >
                   CoreML model
                 </button>
-                <button class="add-model-btn" @click="tab = Tabs.CKPT" disabled>
+                <button class="add-model-btn" @click="tab = Tabs.CKPT">
                   Checkpoint file
                 </button>
               </template>
@@ -191,6 +206,22 @@ const addCoreMLModel = () => {
                 <button
                   class="osmosis primary button"
                   @click="addCoreMLModel()"
+                >
+                  Add
+                </button>
+              </template>
+              <template v-else-if="tab === Tabs.CKPT">
+                <LoadModelTextInput
+                  description="Path to ckpt or safetensors"
+                  v-model="diffusersModelId"
+                />
+                <div class="flex flex-row items-center gap-x-2">
+                  <Switch v-model="diffusersHalf" />
+                  <span>Half precision?</span>
+                </div>
+                <button
+                  class="osmosis primary button"
+                  @click="addCheckpointModel()"
                 >
                   Add
                 </button>

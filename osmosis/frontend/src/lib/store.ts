@@ -80,23 +80,48 @@ export const useOsmosisStore = defineStore("osmosis", {
     addModel(
       data:
         | { type: "diffusers"; id: string; revision?: string; half: boolean }
-        | { type: "coreml"; id: string; mlpackages: string }
+        | { type: "coreml"; path: string; mlpackages: string }
+        | { type: "checkpoint"; path: string; half: boolean }
     ) {
       return new Promise<void>((resolve) => {
-        ws.emit(
-          "add_model",
-          {
-            model_type: data.type,
-            model_id: data.id,
-            ...(data.type === "coreml"
-              ? { mlpackages_dir: data.mlpackages }
-              : { revision: data.revision || null, half: data.half }),
-          },
-          () => {
-            this.refreshInfo();
-            resolve();
-          }
-        );
+        const callback = () => {
+          this.refreshInfo();
+          resolve();
+        };
+
+        if (data.type === "diffusers") {
+          ws.emit(
+            "add_model",
+            {
+              model_type: data.type,
+              model_id: data.id,
+
+              revision: data.revision || null,
+              half: data.half,
+            },
+            callback
+          );
+        } else if (data.type === "coreml") {
+          ws.emit(
+            "add_model",
+            {
+              model_type: data.type,
+              path: data.path,
+              mlpackages: data.mlpackages,
+            },
+            callback
+          );
+        } else if (data.type === "checkpoint") {
+          ws.emit(
+            "add_model",
+            {
+              model_type: data.type,
+              path: data.path,
+              half: data.half,
+            },
+            callback
+          );
+        }
       });
     },
 
