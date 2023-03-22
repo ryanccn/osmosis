@@ -20,6 +20,7 @@ from platform import system
 import random
 from rich import print
 
+import psutil
 import os
 import sys
 import gc
@@ -72,8 +73,6 @@ class OsmosisModel:
             torch_dtype=torch.float16 if half else torch.float32,
         )
 
-        self.diffusers_model.to(auto_device())
-
         if Config.EXPERIMENTAL_TORCH_COMPILE:
             if torch.cuda.is_available():
                 self.diffusers_model.unet = torch.compile(self.diffusers_model.unet)
@@ -83,12 +82,24 @@ class OsmosisModel:
                     file=sys.stderr,
                 )
 
+        if torch.backends.cudnn:
+            torch.backends.cudnn.benchmark = True
         if torch.cuda.is_available():
+            torch.backends.cuda.matmul.allow_tf32 = True
+
+        if Config.SEQUENTIAL_CPU_OFFLOAD:
             self.diffusers_model.enable_sequential_cpu_offload()
+        elif Config.MODEL_CPU_OFFLOAD:
+            self.diffusers_model.enable_model_cpu_offload()
+        else:
+            self.diffusers_model.to(auto_device())
+
         if is_xformers_available() and not Config.EXPERIMENTAL_TORCH_COMPILE:
             self.diffusers_model.enable_xformers_memory_efficient_attention()
         else:
             self.diffusers_model.enable_attention_slicing()
+
+        self.diffusers_model.enable_vae_tiling()
 
         self.compel = Compel(
             tokenizer=self.diffusers_model.tokenizer,

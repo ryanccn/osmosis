@@ -29,6 +29,16 @@ fix_torch_funcs_mps()
     help="Show in-progress images during generation",
 )
 @click.option(
+    "--model-cpu-offload",
+    is_flag=True,
+    help="Offloads all models to CPU using accelerate, reducing memory usage with a low impact on performance",
+)
+@click.option(
+    "--sequential-cpu-offload",
+    is_flag=True,
+    help="Offloads all models to CPU and load on a submodule basis for each, reducing more memory usage but with a larger performance impact",
+)
+@click.option(
     "--experimental-torch-compile",
     is_flag=True,
     help="Use Pytorch 2.0 compilation optimization",
@@ -36,15 +46,22 @@ fix_torch_funcs_mps()
 def main(
     port: int = 26538,
     data_dir: str | None = None,
-    show_step_latents=False,
-    experimental_torch_compile=False,
+    show_step_latents=None,
+    model_cpu_offload=None,
+    sequential_cpu_offload=None,
+    experimental_torch_compile=None,
 ):
     """Osmosis is an experimental Stable Diffusion web frontend."""
     Config.DATA_DIR = data_dir or Config.DATA_DIR
-    Config.SHOW_STEP_LATENTS = show_step_latents or Config.SHOW_STEP_LATENTS
-    Config.EXPERIMENTAL_TORCH_COMPILE = (
-        experimental_torch_compile or Config.EXPERIMENTAL_TORCH_COMPILE
-    )
+
+    if show_step_latents is not None:
+        Config.SHOW_STEP_LATENTS = show_step_latents
+    if experimental_torch_compile is not None:
+        Config.EXPERIMENTAL_TORCH_COMPILE = experimental_torch_compile
+    if model_cpu_offload is not None:
+        Config.MODEL_CPU_OFFLOAD = model_cpu_offload
+    if sequential_cpu_offload is not None:
+        Config.SEQUENTIAL_CPU_OFFLOAD = sequential_cpu_offload
 
     server = OsmosisServer(port=port)
     server.start()

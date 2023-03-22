@@ -27,6 +27,7 @@ dependencies = [
   "click>=8.1",
   "rich",
   "tqdm",
+  "psutil",
 ]
 
 classifiers = [

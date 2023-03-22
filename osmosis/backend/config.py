@@ -15,4 +15,7 @@ class Config:
     SHOW_STEP_LATENTS = False
     EXPERIMENTAL_TORCH_COMPILE = False
 
+    MODEL_CPU_OFFLOAD = False
+    SEQUENTIAL_CPU_OFFLOAD = False
+
     DEBUG = True if os.environ.get("DEBUG", None) == "1" else False
