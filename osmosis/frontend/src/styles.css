@@ -47,7 +47,7 @@ html {
 
 @layer components {
   .osmosis.form.input {
-    @apply px-3 py-2 placeholder:text-fg/50 bg-surface rounded focus:outline-none focus:ring-accent/50 focus:ring disabled:opacity-75;
+    @apply text-sm px-3 py-2 placeholder:text-fg/50 bg-surface rounded focus:outline-none focus:ring-accent/50 focus:ring disabled:opacity-75;
   }
 
   .osmosis.button {

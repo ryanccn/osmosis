@@ -20,6 +20,7 @@ from platform import system
 import random
 from rich import print
 
+import os
 import sys
 import gc
 
@@ -60,7 +61,9 @@ class OsmosisModel:
         self.unload_model()
 
         self.type = "diffusers"
-        self.name = model_id
+        self.name = (
+            model_id if not os.path.exists(model_id) else os.path.basename(model_id)
+        )
 
         self.diffusers_model = StableDiffusionPipeline.from_pretrained(
             model_id,
@@ -68,6 +71,8 @@ class OsmosisModel:
             safety_checker=None,
             torch_dtype=torch.float16 if half else torch.float32,
         )
+
+        self.diffusers_model.to(auto_device())
 
         if Config.EXPERIMENTAL_TORCH_COMPILE:
             if torch.cuda.is_available():
@@ -84,8 +89,6 @@ class OsmosisModel:
             self.diffusers_model.enable_xformers_memory_efficient_attention()
         else:
             self.diffusers_model.enable_attention_slicing()
-
-        self.diffusers_model.to(auto_device())
 
         self.compel = Compel(
             tokenizer=self.diffusers_model.tokenizer,

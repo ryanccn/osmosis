@@ -66,12 +66,8 @@ export const useOsmosisStore = defineStore("osmosis", {
         this.progress.type = "indeterminate";
         this.progress.task = "load_model";
 
-        ws.emit("load_model", internalId, () => {
-          const internalRepresentation = this.availableModels[internalId];
-          this.model = {
-            name: internalRepresentation.id,
-            type: internalRepresentation.type,
-          };
+        ws.emit("load_model", internalId, async () => {
+          await this.refreshInfo();
 
           this.progress.type = null;
           this.progress.task = "";
@@ -104,36 +100,39 @@ export const useOsmosisStore = defineStore("osmosis", {
     },
 
     refreshInfo() {
-      ws.emit(
-        "info",
-        async ({
-          model,
-          models,
-          coreml_available,
-        }: {
-          model: { type: "diffusers" | "coreml"; name: string };
-          models: any;
-          coreml_available: boolean;
-        }) => {
-          const store = useOsmosisStore();
+      return new Promise<void>((resolve) => {
+        ws.emit(
+          "info",
+          async ({
+            model,
+            models,
+            coreml_available,
+          }: {
+            model: { type: "diffusers" | "coreml"; name: string };
+            models: any;
+            coreml_available: boolean;
+          }) => {
+            this.model =
+              model.type === null
+                ? null
+                : { type: model.type, name: model.name };
+            this.availableModels = models;
 
-          store.model =
-            model.type === null ? null : { type: model.type, name: model.name };
-          store.availableModels = models;
+            this.coreMLAvailable = coreml_available;
 
-          store.coreMLAvailable = coreml_available;
+            await this.refreshGallery();
+            if (!this.gallerySelected) {
+              this.gallerySelected = this.gallery[0];
+              this.gallerySelectedMetadata = await this.getImageMetadata(
+                this.gallerySelected
+              );
+            }
 
-          await store.refreshGallery();
-          if (!store.gallerySelected) {
-            store.gallerySelected = store.gallery[0];
-            store.gallerySelectedMetadata = await this.getImageMetadata(
-              store.gallerySelected
-            );
+            this.connected = true;
+            resolve();
           }
-
-          store.connected = true;
-        }
-      );
+        );
+      });
     },
 
     getImageMetadata(name: string) {
