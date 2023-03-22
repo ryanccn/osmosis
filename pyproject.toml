@@ -16,7 +16,7 @@ dependencies = [
   "diffusers[torch]~=0.14",
   "coremltools; sys_platform=='darwin'",
   "safetensors",
-  "compel~=0.1",
+  "compel~=1.0.2",
   "transformers",
   "accelerate",
   "flask~=2.2.3",
