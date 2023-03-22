@@ -53,7 +53,14 @@ MODELS_CONFIG_PATH = os.path.join(Config.DATA_DIR, "models.json")
 def load_models():
     try:
         with open(MODELS_CONFIG_PATH, "r") as f:
-            return json.load(f)
+            data = json.load(f)
+
+            for internal_id in data:
+                if os.path.exists(data[internal_id]["id"]):
+                    data[internal_id]["id"] = os.path.basename(data[internal_id]["id"])
+
+            return data
+
     except FileNotFoundError:
         return {}
     except json.decoder.JSONDecodeError:

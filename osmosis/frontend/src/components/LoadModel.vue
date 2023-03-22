@@ -110,7 +110,7 @@ const addCoreMLModel = () => {
             >
               <DialogTitle
                 as="h3"
-                class="flex w-full justify-between text-2xl font-bold mb-2"
+                class="flex w-full justify-between text-2xl font-bold mb-4"
               >
                 <span>Load model</span>
                 <button
@@ -124,18 +124,20 @@ const addCoreMLModel = () => {
 
               <template v-if="tab === Tabs.INDEX">
                 <button
-                  class="px-4 py-3 flex flex-col items-start gap-y-1 bg-surface hover:bg-surface-hover transition-all rounded-md w-full"
+                  class="px-6 py-4 flex flex-col items-start text-left gap-y-2 bg-surface hover:bg-surface-hover transition-all rounded-md w-full"
                   @click="loadModel(model[0])"
                   v-for="model in Object.entries(store.availableModels)"
                   :key="model[0]"
                 >
-                  <span class="text-lg font-semibold"
-                    >{{ model[1].id
+                  <p class="text-lg font-bold">
+                    {{ model[1].id
                     }}<span class="text-gray-400" v-if="model[1].revision"
                       >#{{ model[1].revision }}</span
-                    ></span
-                  >
-                  <span>{{ modelTypeToReadable(model[1].type) }}</span>
+                    >
+                  </p>
+                  <p class="text-sm">
+                    {{ modelTypeToReadable(model[1].type) }}
+                  </p>
                 </button>
               </template>
 
