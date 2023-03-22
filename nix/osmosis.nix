@@ -6,20 +6,19 @@
   fetchFromGitHub,
   fetchPypi,
   osmosis-frontend,
-  python3Packages,
   version,
   isNvidia ? false,
   ...
 }: let
   inherit (lib) cleanSource licenses maintainers;
-  inherit (python3Packages) buildPythonPackage;
+  inherit (aipython3) buildPythonPackage;
 
   # for some reason this doesn't build by default...
   compel = aipython3.compel.overridePythonAttrs (_: {
     propagatedBuildInputs = with aipython3; [
       setuptools
       diffusers
-      python3Packages.pyparsing
+      pyparsing
       transformers
       torch
     ];
@@ -50,6 +49,11 @@
       pytestCheckHook
       redis
     ];
+  });
+
+  omegaconf = aipython3.omegaconf.overridePythonAttrs (_: rec {
+    # this fails because of a deprecation warning, not anything serious
+    doCheck = false;
   });
 
   pyre-extensions = buildPythonPackage rec {
@@ -108,8 +112,11 @@ in
         flask-socketio
         flit-core
         gfpgan
+        psutil
+        omegaconf
         realesrgan
         rich
+        safetensors
         torch
         transformers
         tqdm
