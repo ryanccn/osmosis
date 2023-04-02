@@ -37,6 +37,11 @@
   }: let
     version = builtins.substring 0 8 self.lastModifiedDate;
     inherit (flake-utils.lib) eachDefaultSystem;
+    packageFn = pkgs:
+      import ./nix {
+        inherit pkgs version nixified-ai;
+        inherit (pkgs) lib;
+      };
   in
     eachDefaultSystem (system: let
       pkgs = import nixpkgs {inherit system;};
@@ -76,14 +81,11 @@
       };
 
       packages = let
-        inherit
-          (import ./nix {
-            inherit pkgs version nixified-ai;
-            inherit (pkgs) lib;
-          })
-          packages
-          ;
+        packages = packageFn pkgs;
       in
         packages // {default = packages.osmosis-nvidia;};
-    });
+    })
+    // {
+      overlays.default = final: _: packageFn final;
+    };
 }
