@@ -16,7 +16,18 @@ jobs:
         with:
           name: osmosis
           authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
-      - run: |
+
+      # only try to push to cachix when we're pushing directly & have access to token
+      - if: ${{ github.event_name == 'push' }}
+        name: build and cache
+        run: |
+          cachix watch-exec osmosis -- nix-build -A packages.x86_64-linux.osmosis-frontend
+          cachix watch-exec osmosis -- nix-build -A packages.x86_64-linux.osmosis-nvidia
+          cachix watch-exec osmosis -- nix build -A packagex.x86_64-linux.osmosis-amd
+
+      - if: ${{ github.event_name == 'pull_request' }}
+        name: build
+        run: |
           nix build .#osmosis-frontend --print-build-logs --accept-flake-config
           nix build .#osmosis-nvidia --print-build-logs --accept-flake-config
           nix build .#osmosis-amd --print-build-logs --accept-flake-config
