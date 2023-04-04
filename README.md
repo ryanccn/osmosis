@@ -94,7 +94,7 @@ As an overlay:
   ...
 }: {
   nixpkgs.overlays = [osmosis.overlays.default];
-  environment.systemPackages = with pkg; [osmos-nvidia];
+  environment.systemPackages = with pkg; [osmosis-nvidia];
 }
 ```
 
