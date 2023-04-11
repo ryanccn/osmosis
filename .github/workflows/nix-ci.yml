@@ -30,7 +30,8 @@ jobs:
           nix-build -A packages.x86_64-linux.${{ matrix.package }}
 
       # only cache on push to original repository
-      - if: ${{ github.event_name == 'push' && github.action_repository == 'ryanccn/osmosis' }}
+      # (and allow for workflow_dispatch calls)
+      - if: ${{ github.event_name != 'pull_request' && github.action_repository == 'ryanccn/osmosis' }}
         name: cache
         run: |
           # shellcheck disable=SC2046
