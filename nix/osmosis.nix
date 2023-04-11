@@ -16,11 +16,11 @@
   # for some reason this doesn't build by default...
   compel = aipython3.compel.overridePythonAttrs (_: rec {
     pname = "compel";
-    version = "1.0.2";
+    version = "1.0.5";
 
     src = fetchPypi {
       inherit pname version;
-      sha256 = "sha256-4yqJsrsGiquLI+xc+vGOSF4K+st6xM4C8FbEVT2GIbk=";
+      sha256 = "sha256-vpMXDsB+7t+ZxlSt795jsBZ76ZqbQlTe0XhAuA/LfFI=";
     };
 
     propagatedBuildInputs = with aipython3; [
@@ -44,12 +44,12 @@
   # pyproject.toml requires ~= 5.3.2
   # TODO: remove this when it gets updated in nixpkgs
   flask-socketio = aipython3.flask-socketio.overridePythonAttrs (_: rec {
-    version = "5.3.2";
+    version = "5.3.3";
     src = fetchFromGitHub {
       owner = "miguelgrinberg";
       repo = "Flask-SocketIO";
       rev = "v${version}";
-      sha256 = "sha256-fjHNvabuznhSK12uiYReQam9j2zvAsMrjW2f3TFtL24=";
+      sha256 = "sha256-oqy6tSk569QaSkeNsyXuaD6uUB3yuEFg9Jwh5rneyOE=";
     };
 
     checkInputs = with aipython3; [
