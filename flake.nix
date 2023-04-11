@@ -1,11 +1,17 @@
 {
   description = "An experimental Stable Diffusion frontend";
 
-  # this allows us to use nixified-ai's cachix instance
+  # this allows us to use nixified-ai's and our own cachix instance
   # so we don't have to rebuild all the time :)
   nixConfig = {
-    extra-substituters = ["https://ai.cachix.org"];
-    extra-trusted-public-keys = ["ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="];
+    extra-substituters = [
+      "https://ai.cachix.org"
+      "https://osmosis.cachix.org"
+    ];
+    extra-trusted-public-keys = [
+      "ai.cachix.org-1:N9dzRK+alWwoKXQlnn0H6aUx0lU/mspIoz8hMvGvbbc="
+      "osmosis.cachix.org-1:mq0PbolVaW/p61SJvxfXbq6UkEmkWg6xdLL3uUPrr9g="
+    ];
   };
 
   inputs = {
