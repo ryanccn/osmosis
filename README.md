@@ -71,6 +71,48 @@ $ pipx install osmosis --pip-args "--extra-index-url https://download.pytorch.or
 $ pip install [--user] osmosis --extra-index-url https://download.pytorch.org/whl/rocm5.2
 ```
 
+### Nix Instructions
+
+If you are on macOS, Windows with WSL2, or Linux, you can use the Nix flake to install osmosis for any gpu.
+
+With `nix run`:
+
+```bash
+# for NVIDIA cards
+$ nix run github.com:ryanccn/osmosis#osmosis-nvidia
+# for AMD cards
+$ nix run github.com:ryanccn/osmosis#osmosis-amd
+# Apple silicion users can install either
+```
+
+As an overlay:
+
+```nix
+{
+  pkgs,
+  osmosis,
+  ...
+}: {
+  nixpkgs.overlays = [osmosis.overlays.default];
+  environment.systemPackages = with pkgs; [osmosis-nvidia];
+}
+```
+
+With `nix profile`:
+
+```bash
+$ nix profile install github.com:ryanccn/osmosis#osmosis-nvidia
+$ nix profile install github.com:ryanccn/osmosis#osmosis-amd
+```
+
+With `nix-env`:
+
+```bash
+# in the root of the project
+$ nix-env -iA packages.x86_64-linux.osmosis-nvidia
+$ nix-env -iA packages.x86_64-linux.osmosis-amd
+```
+
 ## Running
 
 ```

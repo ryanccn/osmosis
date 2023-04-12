@@ -1,0 +1,40 @@
+name: "Nix CI"
+
+on:
+  pull_request:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        package: [osmosis-amd, osmosis-nvidia]
+
+    steps:
+      - uses: actions/checkout@v3
+
+      - uses: cachix/install-nix-action@v20
+        with:
+          nix_path: nixpkgs=channel:nixos-unstable
+
+      - uses: cachix/cachix-action@v12
+        with:
+          name: osmosis
+          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+
+      - name: build
+        run: |
+          nix-build -A packages.x86_64-linux.${{ matrix.package }}
+
+      # only cache on push to original repository
+      # (and allow for workflow_dispatch calls)
+      - if: ${{ github.event_name != 'pull_request' && github.action_repository == 'ryanccn/osmosis' }}
+        name: cache
+        run: |
+          # shellcheck disable=SC2046
+          nix-store -qR --include-outputs $(nix-store -qd $(nix-build -A packages.x86_64-linux.${{ matrix.package }})) \
+            | grep -v '\.drv$' \
+            | cachix push osmosis
