@@ -140,6 +140,20 @@ in
         else []
       );
 
+    # thanks https://nixified.ai/!
+    makeWrapperArgs = [
+      ''        --run '
+                if [ -d "/usr/lib/wsl/lib" ]
+                then
+                  echo "Running via WSL (Windows Subsystem for Linux), setting LD_LIBRARY_PATH=/usr/lib/wsl/lib"
+                	set -x
+                	export LD_LIBRARY_PATH="/usr/lib/wsl/lib"
+                	set -x
+                fi
+                '
+      ''
+    ];
+
     # possible TODO: there might be a
     # better way to do this...
     patchPhase = ''
