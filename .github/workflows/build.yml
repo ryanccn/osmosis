@@ -51,7 +51,7 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: ${{ jobs.build.outputs.version-changed }}
+    if: ${{ needs.build.outputs.version-changed }}
     steps:
       - name: Get package version
         id: get-package-version
