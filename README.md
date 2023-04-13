@@ -24,7 +24,7 @@ An experimental Stable Diffusion web frontend.
 - [x] [xFormers](https://github.com/facebookresearch/xformers) optimization
 - [x] [Apple Silicon](https://huggingface.co/docs/diffusers/optimization/mps) optimization
 - [x] [PyTorch 2.0](https://huggingface.co/docs/diffusers/optimization/torch2.0) optimization
-- [ ] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models (_not planned_)
+- [x] Checkpoint / [Safetensors](https://huggingface.co/docs/safetensors/index) file models
 
 ## System Requirements
 
