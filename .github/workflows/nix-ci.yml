@@ -1,7 +1,6 @@
-name: "Nix CI"
+name: 'Nix CI'
 
 on:
-  pull_request:
   push:
   workflow_dispatch:
 
@@ -16,23 +15,23 @@ jobs:
     steps:
       - uses: actions/checkout@v3
 
-      - uses: cachix/install-nix-action@v20
+      - name: Install Nix
+        uses: cachix/install-nix-action@v20
         with:
           nix_path: nixpkgs=channel:nixos-unstable
 
-      - uses: cachix/cachix-action@v12
+      - name: Setup Cachix
+        uses: cachix/cachix-action@v12
         with:
           name: osmosis
-          authToken: "${{ secrets.CACHIX_AUTH_TOKEN }}"
+          authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
-      - name: build
+      - name: Build
         run: |
           nix-build -A packages.x86_64-linux.${{ matrix.package }}
 
-      # only cache on push to original repository
-      # (and allow for workflow_dispatch calls)
-      - if: ${{ github.event_name != 'pull_request' && github.action_repository == 'ryanccn/osmosis' }}
-        name: cache
+      - if: ${{ github.action_repository == 'ryanccn/osmosis' }}
+        name: Push cache to Cachix
         run: |
           # shellcheck disable=SC2046
           nix-store -qR --include-outputs $(nix-store -qd $(nix-build -A packages.x86_64-linux.${{ matrix.package }})) \
