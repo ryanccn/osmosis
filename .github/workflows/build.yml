@@ -1,4 +1,4 @@
-name: Build and publish
+name: 'Build (and publish)'
 
 on:
   push:
@@ -39,7 +39,8 @@ jobs:
       - name: Build package
         run: python3 -m build
 
-      - uses: dorny/paths-filter@v2
+      - name: Check for version change
+        uses: dorny/paths-filter@v2
         id: changes
         with:
           filters: |
@@ -52,11 +53,13 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     if: ${{ needs.build.outputs.version-changed }}
+    needs: [build]
     steps:
       - name: Get package version
         id: get-package-version
         run: python -c "from osmosis import __version__; print(f\"version={__version__}\")" > $GITHUB_OUTPUT
-      - name: Publish draft to GitHub Releases
+
+      - name: Publish to GitHub Releases
         uses: ncipollo/release-action@v1
         with:
           name: 'v${{ steps.get-package-version.outputs.version }}'
