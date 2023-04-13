@@ -47,6 +47,17 @@ jobs:
             version:
               - 'osmosis/version.py'
 
+      - name: Upload wheel artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: wheel
+          path: dist/*.whl
+      - name: Upload sdist artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: sdist
+          path: dist/*.tar.gz
+
     outputs:
       version-changed: ${{ steps.changes.outputs.version }}
 
@@ -55,6 +66,17 @@ jobs:
     if: ${{ needs.build.outputs.version-changed }}
     needs: [build]
     steps:
+      - name: Download wheel artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: wheel
+          path: dist/
+      - name: Download sdist artifacts
+        uses: actions/download-artifact@master
+        with:
+          name: sdist
+          path: dist/
+
       - name: Get package version
         id: get-package-version
         run: python -c "from osmosis import __version__; print(f\"version={__version__}\")" > $GITHUB_OUTPUT
