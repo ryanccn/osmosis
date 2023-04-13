@@ -1,6 +1,7 @@
 * @ryanccn
 
 /nix/ @getchoo @ryanccn
+/.github/workflows/nix-ci.yml @getchoo @ryanccn
 default.nix @getchoo @ryanccn
 flake.nix @getchoo @ryanccn
 flake.lock @getchoo @ryanccn
