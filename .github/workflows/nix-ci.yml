@@ -1,4 +1,4 @@
-name: 'Nix CI'
+name: "Nix CI"
 
 on:
   push:
@@ -28,7 +28,11 @@ jobs:
 
       - name: Build
         run: |
-          nix-build -A packages.x86_64-linux.${{ matrix.package }}
+          # retry up to 2 times if build fails as 
+          # sometimes cached dependencies can fail to download
+          for _ in {0..2}; do
+            nix-build -A packages.x86_64-linux.${{ matrix.package }} && break
+          done
 
       - if: ${{ github.action_repository == 'ryanccn/osmosis' }}
         name: Push cache to Cachix
