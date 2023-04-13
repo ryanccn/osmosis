@@ -86,6 +86,8 @@
         };
       };
 
+      formatter = pkgs.alejandra;
+
       packages = let
         packages = packageFn pkgs;
       in
