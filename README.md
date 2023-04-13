@@ -75,6 +75,12 @@ $ pip install [--user] osmosis --extra-index-url https://download.pytorch.org/wh
 
 If you are on macOS, Windows with WSL2, or Linux, you can use the Nix flake to install osmosis for any gpu.
 
+> **Warning**
+> Only CUDA is supported on WSL2. Users will need to run `export LD_LIBRARY_PATH="/usr/lib/wsl/lib"`
+> before starting Osmosis in order for it to be able to use `libcuda`.
+
+> `--impure` will also need to be passed to `nix` commands for this variable to be used.
+
 With `nix run`:
 
 ```bash
