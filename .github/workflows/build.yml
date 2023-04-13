@@ -2,16 +2,19 @@ name: 'Build (and publish)'
 
 on:
   push:
-    branches:
-      - 'main'
   workflow_dispatch:
+    inputs:
+      force-publish:
+        type: boolean
+        description: Force the build to publish regardless of version change
+        default: false
+        required: false
 
 permissions:
   contents: write
 
 jobs:
   build:
-    if: github.repository == 'ryanccn/osmosis'
     runs-on: ubuntu-latest
 
     steps:
@@ -64,7 +67,7 @@ jobs:
   publish:
     runs-on: ubuntu-latest
     needs: [build]
-    if: ${{ needs.build.outputs.version-changed == 'true' }}
+    if: ${{ github.event.inputs.force-publish || github.ref == 'refs/heads/main' && needs.build.outputs.version-changed == 'true' }}
     steps:
       - name: Checkout source
         uses: actions/checkout@v3
@@ -74,12 +77,12 @@ jobs:
           python-version: '3.10'
 
       - name: Download wheel artifacts
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         with:
           name: wheel
           path: dist/
       - name: Download sdist artifacts
-        uses: actions/download-artifact@master
+        uses: actions/download-artifact@v3
         with:
           name: sdist
           path: dist/
