@@ -63,8 +63,8 @@ jobs:
 
   publish:
     runs-on: ubuntu-latest
-    if: ${{ needs.build.outputs.version-changed }}
     needs: [build]
+    if: ${{ needs.build.outputs.version-changed == 'true' }}
     steps:
       - name: Download wheel artifacts
         uses: actions/download-artifact@master
