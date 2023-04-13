@@ -1,18 +1,16 @@
-name: Publish release
+name: Build and publish
 
 on:
   push:
     branches:
       - 'main'
-    paths:
-      - 'osmosis/version.py'
   workflow_dispatch:
 
 permissions:
   contents: write
 
 jobs:
-  publish:
+  build:
     if: github.repository == 'ryanccn/osmosis'
     runs-on: ubuntu-latest
 
@@ -41,6 +39,20 @@ jobs:
       - name: Build package
         run: python3 -m build
 
+      - uses: dorny/paths-filter@v2
+        id: changes
+        with:
+          filters: |
+            version:
+              - 'osmosis/version.py'
+
+    outputs:
+      version-changed: ${{ steps.changes.outputs.version }}
+
+  publish:
+    runs-on: ubuntu-latest
+    if: ${{ jobs.build.outputs.version-changed }}
+    steps:
       - name: Get package version
         id: get-package-version
         run: python -c "from osmosis import __version__; print(f\"version={__version__}\")" > $GITHUB_OUTPUT
