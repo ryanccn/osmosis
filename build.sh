@@ -1,5 +1,7 @@
 #!/bin/sh
 
+[ ! -f .venv/bin/activate ] && python -m venv .venv
+
 source ".venv/bin/activate"
 
 echo "Building frontend..."
