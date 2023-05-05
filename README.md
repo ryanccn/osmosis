@@ -120,3 +120,5 @@ $ osmosis
 ```
 
 is all you need to start the web UI.
+
+powered by balls
