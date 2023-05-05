@@ -2,6 +2,7 @@ name: "Nix CI"
 
 on:
   push:
+  pull_request:
   workflow_dispatch:
 
 jobs:
@@ -34,7 +35,7 @@ jobs:
             nix-build -A packages.x86_64-linux.${{ matrix.package }} && break
           done
 
-      - if: ${{ github.action_repository == 'ryanccn/osmosis' }}
+      - if: ${{ github.action_repository == 'ryanccn/osmosis' && github.event_name != 'pull_request' }}
         name: Push cache to Cachix
         run: |
           # shellcheck disable=SC2046
