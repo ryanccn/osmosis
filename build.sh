@@ -6,7 +6,7 @@
 
 echo "Building frontend..."
 
-cd "osmosis/frontend" || exit 
+cd "osmosis/frontend" || exit
 
 [ ! -e node_modules ] && yarn install
 
@@ -16,7 +16,6 @@ echo "Building Python project..."
 
 cd "../.." || exit
 
-python -m pip freeze | grep -E ^build
-[ $? -eq 1 ] && python -m pip install build
+python -c "import build" 2> /dev/null || python -m pip install build
 
 python -m build
