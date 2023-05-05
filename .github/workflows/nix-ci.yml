@@ -27,13 +27,14 @@ jobs:
           name: osmosis
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
+      - name: Setup swap
+        uses: pierotofy/set-swap-space@v1.0
+        with:
+          swap-size-gb: 15
+
       - name: Build
         run: |
-          # retry up to 2 times if build fails as 
-          # sometimes cached dependencies can fail to download
-          for _ in {0..2}; do
-            nix-build -A packages.x86_64-linux.${{ matrix.package }} && break
-          done
+          nix-build --fallback -A packages.x86_64-linux.${{ matrix.package }}
 
       - if: ${{ github.action_repository == 'ryanccn/osmosis' && github.event_name != 'pull_request' }}
         name: Push cache to Cachix
