@@ -15,4 +15,8 @@ yarn build
 echo "Building Python project..."
 
 cd "../.."
+
+python -m pip freeze | grep -E ^build
+[ $? -eq 1 ] && python -m pip install build
+
 python -m build
