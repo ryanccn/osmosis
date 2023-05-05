@@ -27,11 +27,6 @@ jobs:
           name: osmosis
           authToken: ${{ secrets.CACHIX_AUTH_TOKEN }}
 
-      - name: Setup swap
-        uses: pierotofy/set-swap-space@v1.0
-        with:
-          swap-size-gb: 15
-
       - name: Build
         run: |
           nix-build --fallback -A packages.x86_64-linux.${{ matrix.package }}
