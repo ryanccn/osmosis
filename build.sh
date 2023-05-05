@@ -2,11 +2,11 @@
 
 [ ! -f .venv/bin/activate ] && python -m venv .venv
 
-source ".venv/bin/activate"
+. ".venv/bin/activate"
 
 echo "Building frontend..."
 
-cd "osmosis/frontend"
+cd "osmosis/frontend" || exit 
 
 [ ! -e node_modules ] && yarn install
 
@@ -14,7 +14,7 @@ yarn build
 
 echo "Building Python project..."
 
-cd "../.."
+cd "../.." || exit
 
 python -m pip freeze | grep -E ^build
 [ $? -eq 1 ] && python -m pip install build
