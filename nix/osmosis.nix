@@ -3,7 +3,6 @@
   stdenv,
   aipython3,
   coremltools,
-  fetchFromGitHub,
   fetchPypi,
   osmosis-frontend,
   version,
@@ -41,25 +40,7 @@
     };
   });
 
-  # pyproject.toml requires ~= 5.3.2
-  # TODO: remove this when it gets updated in nixpkgs
-  flask-socketio = aipython3.flask-socketio.overridePythonAttrs (_: rec {
-    version = "5.3.3";
-    src = fetchFromGitHub {
-      owner = "miguelgrinberg";
-      repo = "Flask-SocketIO";
-      rev = "v${version}";
-      sha256 = "sha256-oqy6tSk569QaSkeNsyXuaD6uUB3yuEFg9Jwh5rneyOE=";
-    };
-
-    checkInputs = with aipython3; [
-      coverage
-      pytestCheckHook
-      redis
-    ];
-  });
-
-  omegaconf = aipython3.omegaconf.overridePythonAttrs (_: rec {
+  omegaconf = aipython3.omegaconf.overridePythonAttrs (_: {
     # this fails because of a deprecation warning, not anything serious
     doCheck = false;
   });
@@ -83,7 +64,7 @@
   };
 
   # allows for cuda support
-  xformers = buildPythonPackage rec {
+  xformers = buildPythonPackage {
     pname = "xformers";
     version = "0.0.16";
     format = "wheel";
