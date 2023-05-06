@@ -4,6 +4,17 @@
   ...
 }: let
   inherit (python3Packages) buildPythonPackage;
+
+  # coremltools requires protobuf >= 3.10, <= 4.0.0
+  protobuf = python3Packages.protobuf.overridePythonAttrs (_: rec {
+    version = "3.20.3";
+    src = fetchFromGitHub {
+      owner = "protocolbuffers";
+      repo = "protobuf";
+      rev = "v${version}";
+      sha256 = "sha256-u/1Yb8+mnDzc3OwirpGESuhjkuKPgqDAvlgo3uuzbbk=";
+    };
+  });
 in
   buildPythonPackage rec {
     pname = "coremltools";
