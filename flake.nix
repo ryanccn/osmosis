@@ -50,30 +50,7 @@
       };
   in
     eachDefaultSystem (system: let
-      pkgs = import nixpkgs {
-        inherit system;
-        # running tifffile's tests can cause oom errors on systems
-        # with <= 16GB of memory
-        overlays = [
-          (final: prev: {
-            python3 = prev.python3.override {
-              packageOverrides = prev.lib.composeManyExtensions [
-                (
-                  _: prev: {
-                    tifffile = prev.tifffile.overridePythonAttrs (
-                      _: {
-                        doCheck = false;
-                      }
-                    );
-                  }
-                )
-              ];
-            };
-
-            python3Packages = final.python3.pkgs;
-          })
-        ];
-      };
+      pkgs = import nixpkgs {inherit system;};
     in {
       checks = {
         pre-commit-check = pre-commit-hooks.lib.${system}.run {
