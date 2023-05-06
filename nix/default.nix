@@ -19,24 +19,23 @@
     python3'.pkgs;
 
   aipython3-nvidia = mkPythonPackages [
-    myOverlay.osmosisFixes
-    myOverlay.osmosisPackages
     aipythonOverlay.fixPackages
     aipythonOverlay.extraDeps
     aipythonOverlay.torchCuda
+    myOverlay.osmosisFixes
+    myOverlay.osmosisPackages
   ];
 
   aipython3-amd = mkPythonPackages [
-    myOverlay.osmosisFixes
-    myOverlay.osmosisPackages
     aipythonOverlay.fixPackages
     aipythonOverlay.extraDeps
     aipythonOverlay.torchRocm
+    myOverlay.osmosisFixes
+    myOverlay.osmosisPackages
   ];
 
   mkOsmosis = args: callPackage ./osmosis.nix ({inherit version;} // args);
 in rec {
-  inherit aipython3-nvidia;
   coremltools = callPackage ./coremltools.nix {};
   osmosis-frontend = callPackage ./osmosis-frontend.nix {};
   osmosis-nvidia = mkOsmosis {
