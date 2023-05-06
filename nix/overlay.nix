@@ -31,6 +31,24 @@ in {
       ];
     });
 
+    # pyproject.toml requires ~= 5.3.2
+    # TODO: remove this when it gets updated in nixpkgs
+    flask-socketio = prev.flask-socketio.overridePythonAttrs (_: rec {
+      version = "5.3.3";
+      src = fetchFromGitHub {
+        owner = "miguelgrinberg";
+        repo = "Flask-SocketIO";
+        rev = "v${version}";
+        sha256 = "sha256-oqy6tSk569QaSkeNsyXuaD6uUB3yuEFg9Jwh5rneyOE=";
+      };
+
+      checkInputs = with prev; [
+        coverage
+        pytestCheckHook
+        redis
+      ];
+    });
+
     # this fails because of a deprecation warning, not anything serious
     omegaconf = prev.omegaconf.overridePythonAttrs (_: {
       doCheck = false;

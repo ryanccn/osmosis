@@ -15,7 +15,7 @@
   };
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/3c5319ad3aa51551182ac82ea17ab1c6b0f0df89";
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
