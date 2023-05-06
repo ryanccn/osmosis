@@ -12,13 +12,13 @@ in {
       };
     });
 
-    # for some reason this doesn't build by default...
-    compel = prev.compel.overridePythonAttrs (_: rec {
-      pname = "compel";
+    # pyproject.toml requires ~=1.0.5
+    compel = prev.compel.overridePythonAttrs (prev: rec {
       version = "1.0.5";
 
       src = fetchPypi {
-        inherit pname version;
+        inherit (prev) pname;
+        inherit version;
         sha256 = "sha256-vpMXDsB+7t+ZxlSt795jsBZ76ZqbQlTe0XhAuA/LfFI=";
       };
 
