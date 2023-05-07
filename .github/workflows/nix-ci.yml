@@ -27,4 +27,4 @@ jobs:
 
       - name: Build
         run: |
-          nix build --accept-flake-config --fallback .#${{ matrix.package }}
+          nix build --accept-flake-config --fallback -Lv .#${{ matrix.package }}
