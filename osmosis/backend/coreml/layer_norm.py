@@ -9,17 +9,13 @@ import torch.nn as nn
 
 # Reference: https://github.com/apple/ml-ane-transformers/blob/main/ane_transformers/reference/layer_norm.py
 class LayerNormANE(nn.Module):
-    """ LayerNorm optimized for Apple Neural Engine (ANE) execution
+    """LayerNorm optimized for Apple Neural Engine (ANE) execution
 
     Note: This layer only supports normalization over the final dim. It expects `num_channels`
     as an argument and not `normalized_shape` which is used by `torch.nn.LayerNorm`.
     """
 
-    def __init__(self,
-                 num_channels,
-                 clip_mag=None,
-                 eps=1e-5,
-                 elementwise_affine=True):
+    def __init__(self, num_channels, clip_mag=None, eps=1e-5, elementwise_affine=True):
         """
         Args:
             num_channels:       Number of channels (C) where the expected input data format is BC1S. S stands for sequence length.
@@ -74,7 +70,8 @@ class LayerNormANE(nn.Module):
         out = zero_mean * denom
 
         if self.elementwise_affine:
-            out = (out + self.bias.view(1, self.num_channels, 1, 1)
-                   ) * self.weight.view(1, self.num_channels, 1, 1)
+            out = (out + self.bias.view(1, self.num_channels, 1, 1)) * self.weight.view(
+                1, self.num_channels, 1, 1
+            )
 
         return out

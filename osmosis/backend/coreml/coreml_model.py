@@ -18,8 +18,7 @@ import time
 
 
 class CoreMLModel:
-    """ Wrapper for running CoreML models using coremltools
-    """
+    """Wrapper for running CoreML models using coremltools"""
 
     def __init__(self, model_path, compute_unit):
         assert os.path.exists(model_path) and model_path.endswith(".mlpackage")
@@ -28,7 +27,8 @@ class CoreMLModel:
 
         start = time.time()
         self.model = ct.models.MLModel(
-            model_path, compute_units=ct.ComputeUnit[compute_unit])
+            model_path, compute_units=ct.ComputeUnit[compute_unit]
+        )
         load_time = time.time() - start
         logger.info(f"Done. Took {load_time:.1f} seconds.")
 
@@ -37,7 +37,6 @@ class CoreMLModel:
                 "Loading a CoreML model through coremltools triggers compilation every time. "
                 "The Swift package we provide uses precompiled Core ML models (.mlmodelc) to avoid compile-on-load."
             )
-
 
         DTYPE_MAP = {
             65552: np.float16,
@@ -57,8 +56,7 @@ class CoreMLModel:
         for k, v in kwargs.items():
             if k in self.expected_inputs:
                 if not isinstance(v, np.ndarray):
-                    raise TypeError(
-                        f"Expected numpy.ndarray, got {v} for input: {k}")
+                    raise TypeError(f"Expected numpy.ndarray, got {v} for input: {k}")
 
                 expected_dtype = self.expected_inputs[k]["dtype"]
                 if not v.dtype == expected_dtype:
@@ -82,21 +80,24 @@ class CoreMLModel:
 LOAD_TIME_INFO_MSG_TRIGGER = 10  # seconds
 
 
-def _load_mlpackage(submodule_name, mlpackages_dir, model_version,
-                    compute_unit):
-    """ Load Core ML (mlpackage) models from disk (As exported by torch2coreml.py)
-    """
+def _load_mlpackage(submodule_name, mlpackages_dir, model_version, compute_unit):
+    """Load Core ML (mlpackage) models from disk (As exported by torch2coreml.py)"""
     logger.info(f"Loading {submodule_name} mlpackage")
 
-    fname = f"Stable_Diffusion_version_{model_version}_{submodule_name}.mlpackage".replace(
-        "/", "_")
+    fname = (
+        f"Stable_Diffusion_version_{model_version}_{submodule_name}.mlpackage".replace(
+            "/", "_"
+        )
+    )
     mlpackage_path = os.path.join(mlpackages_dir, fname)
 
     if not os.path.exists(mlpackage_path):
         raise FileNotFoundError(
-            f"{submodule_name} CoreML model doesn't exist at {mlpackage_path}")
+            f"{submodule_name} CoreML model doesn't exist at {mlpackage_path}"
+        )
 
     return CoreMLModel(mlpackage_path, compute_unit)
+
 
 def get_available_compute_units():
     return tuple(cu for cu in ct.ComputeUnit._member_names_)
