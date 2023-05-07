@@ -25,7 +25,6 @@
           alejandra.enable = true;
           black.enable = true;
           deadnix.enable = true;
-          eslint.enable = true;
           prettier.enable = true;
           statix.enable = true;
         };
