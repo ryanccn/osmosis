@@ -15,85 +15,27 @@
   };
 
   inputs = {
-    nixpkgs.url = "nixpkgs/nixos-unstable";
+    nixpkgs.url = "nixpkgs/3c5319ad3aa51551182ac82ea17ab1c6b0f0df89";
     flake-compat = {
       url = "github:edolstra/flake-compat";
       flake = false;
     };
-    flake-utils.url = "github:numtide/flake-utils";
+    flake-parts = {
+      url = "github:hercules-ci/flake-parts";
+      inputs.nixpkgs-lib.follows = "nixpkgs";
+    };
     nixified-ai = {
       url = "github:nixified-ai/flake";
       inputs.nixpkgs.follows = "nixpkgs";
+      inputs.flake-parts.follows = "flake-parts";
     };
     pre-commit-hooks = {
       url = "github:cachix/pre-commit-hooks.nix";
       inputs.nixpkgs.follows = "nixpkgs";
       inputs.flake-compat.follows = "flake-compat";
-      inputs.flake-utils.follows = "flake-utils";
     };
   };
 
-  outputs = {
-    self,
-    nixpkgs,
-    flake-utils,
-    nixified-ai,
-    pre-commit-hooks,
-    ...
-  }: let
-    version = builtins.substring 0 8 self.lastModifiedDate;
-    inherit (flake-utils.lib) eachDefaultSystem;
-    packageFn = pkgs:
-      import ./nix {
-        inherit pkgs version nixified-ai;
-        inherit (pkgs) lib;
-      };
-  in
-    eachDefaultSystem (system: let
-      pkgs = import nixpkgs {inherit system;};
-    in {
-      checks = {
-        pre-commit-check = pre-commit-hooks.lib.${system}.run {
-          src = ./.;
-          hooks = {
-            alejandra.enable = true;
-            black.enable = true;
-            deadnix.enable = true;
-            eslint.enable = true;
-            prettier.enable = true;
-            statix.enable = true;
-          };
-        };
-      };
-
-      devShells = let
-        inherit (pkgs) mkShell alejandra deadnix nodePackages nodejs python39 statix yarn;
-        inherit (self.checks.${system}.pre-commit-check) shellHook;
-      in {
-        default = mkShell {
-          inherit shellHook;
-          packages = with nodePackages;
-            [
-              alejandra
-              deadnix
-              eslint
-              nodejs
-              prettier
-              statix
-              yarn
-            ]
-            ++ [(python39.withPackages (p: with p; [black]))];
-        };
-      };
-
-      formatter = pkgs.alejandra;
-
-      packages = let
-        packages = packageFn pkgs;
-      in
-        packages // {default = packages.osmosis-nvidia;};
-    })
-    // {
-      overlays.default = final: _: packageFn final;
-    };
+  outputs = inputs:
+    inputs.flake-parts.lib.mkFlake {inherit inputs;} {imports = [./nix];};
 }
