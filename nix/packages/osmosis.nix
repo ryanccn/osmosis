@@ -8,7 +8,9 @@
   isNvidia ? false,
   ...
 }: let
-  inherit (lib) cleanSource licenses maintainers;
+  inherit (builtins) path;
+  inherit (lib) licenses maintainers optionals;
+  inherit (stdenv) isDarwin;
   inherit (aipython3) buildPythonPackage;
 in
   buildPythonPackage {
@@ -16,7 +18,11 @@ in
     inherit version;
 
     format = "flit";
-    src = cleanSource ./..;
+
+    src = path {
+      path = ../../.;
+      name = "osmosis";
+    };
 
     propagatedBuildInputs = with aipython3;
       [
@@ -38,16 +44,8 @@ in
         transformers
         tqdm
       ]
-      ++ (
-        if isNvidia
-        then [xformers]
-        else []
-      )
-      ++ (
-        if stdenv.isDarwin
-        then [coremltools]
-        else []
-      );
+      ++ optionals isNvidia [xformers]
+      ++ optionals isDarwin [coremltools];
 
     # thanks https://nixified.ai/!
     makeWrapperArgs = [

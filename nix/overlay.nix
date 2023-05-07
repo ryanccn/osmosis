@@ -1,3 +1,5 @@
+# this is where all of our overrides and new packages
+# are declared
 pkgs: let
   inherit (pkgs) fetchFromGitHub fetchPypi;
 in {
