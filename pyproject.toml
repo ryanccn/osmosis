@@ -19,7 +19,7 @@ dependencies = [
   "transformers",
   "accelerate",
   "coremltools~=6.3.0; sys_platform=='darwin'",
-  "flask~=2.2.3",
+  "flask~=2.2.2",
   "flask-socketio~=5.3.3",
   "eventlet",
   "torch>=1.12.1",
