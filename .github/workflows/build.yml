@@ -34,7 +34,8 @@ jobs:
           node-version: 19
       - name: Install pnpm
         uses: pnpm/action-setup@v2
-        working-directory: ./osmosis/frontend
+        with:
+          version: 8.5.0
 
       - name: Install build dependencies
         run: python3 -m pip install --upgrade build
