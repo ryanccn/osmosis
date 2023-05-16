@@ -32,6 +32,9 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 19
+      - name: Install pnpm
+        uses: pnpm/action-setup@v2
+
       - name: Install build dependencies
         run: python3 -m pip install --upgrade build
 
