@@ -36,10 +36,10 @@ jobs:
         run: python3 -m pip install --upgrade build
 
       - name: Install frontend dependencies
-        run: yarn install --frozen-lockfile
+        run: pnpm install
         working-directory: ./osmosis/frontend
       - name: Build frontend
-        run: yarn build
+        run: pnpm run build
         working-directory: ./osmosis/frontend
 
       - name: Build package

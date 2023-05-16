@@ -10,7 +10,7 @@ cd "osmosis/frontend" || exit
 
 [ ! -e node_modules ] && yarn install
 
-yarn build
+pnpm run build
 
 echo "Building Python project..."
 
