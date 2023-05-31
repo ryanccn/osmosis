@@ -78,7 +78,7 @@ class OsmosisModel:
         )
         self._set_diffusers_options()
 
-    def load_checkpoint(self, path: str, vae: str | None = None, half=False):
+    def load_checkpoint(self, path: str, vae: "str | None" = None, half=False):
         self._unload_model()
         self.type = "diffusers"
         self.name = os.path.basename(path)

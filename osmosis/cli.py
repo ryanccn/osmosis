@@ -50,7 +50,7 @@ fix_torch_funcs_mps()
 )
 def main(
     port: int = 26538,
-    data_dir: str | None = None,
+    data_dir: "str | None" = None,
     show_step_latents=None,
     safety_checker=None,
     model_cpu_offload=None,
