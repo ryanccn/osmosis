@@ -8,7 +8,7 @@ echo "Building frontend..."
 
 cd "osmosis/frontend" || exit
 
-[ ! -e node_modules ] && yarn install
+[ ! -e node_modules ] && pnpm install
 
 pnpm run build
 
