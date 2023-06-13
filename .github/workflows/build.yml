@@ -1,4 +1,4 @@
-name: 'Build (and publish)'
+name: "Build (and publish)"
 
 on:
   push:
@@ -27,24 +27,20 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: 19
-      - name: Install pnpm
-        uses: pnpm/action-setup@v2
-        with:
-          version: 8.5.0
+          node-version: 20
 
       - name: Install build dependencies
         run: python3 -m pip install --upgrade build
 
       - name: Install frontend dependencies
-        run: pnpm install
+        run: yarn install --frozen-lockfile
         working-directory: ./osmosis/frontend
       - name: Build frontend
-        run: pnpm run build
+        run: yarn run build
         working-directory: ./osmosis/frontend
 
       - name: Build package
@@ -82,7 +78,7 @@ jobs:
       - name: Setup Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.10'
+          python-version: "3.10"
 
       - name: Download wheel artifacts
         uses: actions/download-artifact@v3
@@ -102,9 +98,9 @@ jobs:
       - name: Publish to GitHub Releases
         uses: ncipollo/release-action@v1
         with:
-          name: 'v${{ steps.get-package-version.outputs.version }}'
+          name: "v${{ steps.get-package-version.outputs.version }}"
           tag: ${{ steps.get-package-version.outputs.version }}
-          artifacts: 'dist/*.whl,dist/*.tar.gz'
+          artifacts: "dist/*.whl,dist/*.tar.gz"
           generateReleaseNotes: true
           draft: false
 
