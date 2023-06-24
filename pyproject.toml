@@ -15,7 +15,7 @@ dynamic = ["version"]
 dependencies = [
   "diffusers[torch]~=0.14",
   "safetensors",
-  "compel~=1.0.5",
+  "compel~=1.2.1",
   "transformers",
   "accelerate",
   "coremltools~=6.3.0; sys_platform=='darwin'",
