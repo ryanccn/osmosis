@@ -13,7 +13,7 @@
   "dependencies": {
     "@headlessui/vue": "^1.7.13",
     "@vueuse/core": "^10.1.2",
-    "lucide-vue-next": "^0.216.0",
+    "lucide-vue-next": "^0.257.0",
     "pinia": "^2.0.36",
     "socket.io-client": "^4.6.1",
     "vue": "^3.3.2",
